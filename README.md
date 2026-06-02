@@ -6,6 +6,10 @@ A lightweight, keyboard-driven tab switcher for Chromium browsers, inspired by O
 
 ![Cyclr Preview](assets/screenshots/screenshot.jpeg)
 
+<div align="center">
+**[Visit the website](https://cyclr-five.vercel.app/)**
+</div>
+
 ## Features
 
 - **Keyboard-First Navigation**: Cycle tabs using `Alt + Q` (or custom combinations) without touching the mouse.
@@ -31,7 +35,7 @@ The extension isn't on the [Chrome Web Store](https://chrome.google.com/webstore
 4. Click **Load unpacked** and select the unzipped folder (or the repo root).
 5. Done — configure preferences via the extension's options page.
 
-> See the **[full step-by-step install guide](https://revanthlol.github.io/cyclr/src/web/install.html)** for screenshots and detailed instructions.
+> See the **[Homepage](https://cyclr-five.vercel.app/index.html)** for further details.
 
 ## Known Limitations
 
