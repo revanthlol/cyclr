@@ -29,7 +29,7 @@ As of now the extension isnt uploaded on the [Chrome Web Store](https://chrome.g
 
 ## Known Limitations
 
-- **Restricted Chrome pages**: Chrome blocks content scripts on internal and privileged pages, so the overlay will not appear on `chrome://` pages (Settings, Extensions, History, etc.), the default New Tab page, the Chrome Web Store, `chrome-extension://` pages, or local `file://` URLs. This is a hard browser-level restriction with no workaround for unpacked extensions.
+- **Restricted pages**: Cyclr cannot run on Chrome’s internal or privileged pages (`chrome://*`, New Tab, Web Store, DevTools, other extension pages, or `chrome-extension://*`) due to browser security restrictions. `file://` support requires manual permission, while contexts like the PDF viewer or `data:` URLs may work with limitations due to iframe isolation.
 
 - **Iframes**: The overlay is intentionally suppressed inside iframes to prevent duplicate instances. If a page is loaded entirely inside a frame (some embedded dashboards, web apps), the overlay may not trigger.
 

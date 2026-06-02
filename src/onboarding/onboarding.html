@@ -2,110 +2,120 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Welcome to Cyclr - Tab Switcher Onboarding</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to Cyclr — Onboarding</title>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="onboarding.css">
 </head>
 <body>
   <div class="onboarding-container">
-    <div class="onboarding-card">
-      <div class="welcome-section">
-        <div class="logo-box">
-          <img src="../../assets/icons/cyclr-128x128.png" class="onboarding-logo" alt="Cyclr Logo">
-        </div>
-        <h1 class="welcome-title">Welcome to Cyclr</h1>
-        <p class="welcome-desc">Let's customize your tab-switching experience. Adjust your preferences below to match your workflow instantly.</p>
+    <!-- Header -->
+    <header class="header">
+      <div class="brand">
+        <img src="../../assets/icons/cyclr-32x32.png" class="brand-logo" alt="Cyclr Logo">
+        <span class="brand-name">cyclr</span>
       </div>
+      <span class="header-tag">initial setup</span>
+    </header>
 
-      <div class="settings-form">
-        <!-- Tab Order -->
-        <div class="option-row">
-          <div class="option-info">
-            <label class="option-label">Tab Order List</label>
-            <span class="option-sub">How tabs are structured in the switcher list.</span>
+    <!-- Main Content -->
+    <main class="main-content">
+      <section class="intro">
+        <h1 class="title">Let's customize your tab-switching experience.</h1>
+        <p class="subtitle">Set your preferences and custom shortcut triggers to align Cyclr perfectly with your browser workflow.</p>
+      </section>
+
+      <!-- Settings Grid Layout -->
+      <section class="settings-section">
+        <div class="settings-grid">
+          <!-- Column 1: Core Preferences -->
+          <div class="settings-column">
+            <h2>Preferences</h2>
+            <div class="form-group">
+              <div class="label-info">
+                <label for="orderMode">Tab Order List</label>
+                <span class="sub-text">How tabs are structured in the switcher list.</span>
+              </div>
+              <select id="orderMode">
+                <option value="tab-order">Tab Strip Order (Default)</option>
+                <option value="mru">Recent Order (MRU)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <div class="label-info">
+                <label for="themeMode">Theme Mode</label>
+                <span class="sub-text">Visual theme of the switcher overlay.</span>
+              </div>
+              <select id="themeMode">
+                <option value="dark">Dark Theme (Default)</option>
+                <option value="light">Light Theme</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <div class="label-info">
+                <label for="uiScale">Switcher Scale</label>
+                <span class="sub-text">Adjust the visual scale of the overlay.</span>
+              </div>
+              <select id="uiScale">
+                <option value="0.85">Small (85%)</option>
+                <option value="1.0">Medium (100%)</option>
+                <option value="1.15">Large (115%)</option>
+              </select>
+            </div>
           </div>
-          <div class="option-control">
-            <select id="orderMode">
-              <option value="tab-order">Tab Strip Order (Default)</option>
-              <option value="mru">Recent Order (MRU)</option>
-            </select>
+
+          <!-- Column 2: Layout & Shortcuts -->
+          <div class="settings-column">
+            <h2>Configuration</h2>
+            
+            <div class="form-group row-align">
+              <div class="label-info">
+                <label for="layoutToggle">Tab Preview</label>
+                <span class="sub-text">Show a widescreen page preview panel.</span>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="layoutToggle">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="form-group row-align">
+              <div class="label-info">
+                <label for="devToggle">Developer Logs</label>
+                <span class="sub-text">Enable debug output in console logs.</span>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="devToggle">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="form-group row-align">
+              <div class="label-info">
+                <label>Custom Shortcut Trigger</label>
+                <span class="sub-text">Hold modifiers &amp; press key. Default: Alt + Q</span>
+              </div>
+              <div class="shortcut-recorder">
+                <button id="recordShortcutBtn" class="record-btn">Alt + Q</button>
+                <button id="resetShortcutBtn" class="reset-btn" title="Reset to default Alt+Q">&times;</button>
+              </div>
+            </div>
           </div>
         </div>
+      </section>
 
-        <!-- Theme Mode -->
-        <div class="option-row">
-          <div class="option-info">
-            <label class="option-label">Theme Mode</label>
-            <span class="option-sub">Visual theme of the switcher overlay.</span>
-          </div>
-          <div class="option-control">
-            <select id="themeMode">
-              <option value="dark">Dark Theme (Default)</option>
-              <option value="light">Light Theme</option>
-            </select>
-          </div>
-        </div>
+      <!-- Action Footer -->
+      <section class="cta-section">
+        <button id="getStartedBtn" class="btn-primary">Finish Setup &amp; Explore Guide &rarr;</button>
+      </section>
+    </main>
 
-        <!-- Switcher Scale -->
-        <div class="option-row">
-          <div class="option-info">
-            <label class="option-label">Switcher Scale</label>
-            <span class="option-sub">Adjust the visual scale of the overlay.</span>
-          </div>
-          <div class="option-control">
-            <select id="uiScale">
-              <option value="0.85">Small (85%)</option>
-              <option value="1.0">Medium (100%)</option>
-              <option value="1.15">Large (115%)</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Tab Preview Toggle -->
-        <div class="option-row">
-          <div class="option-info">
-            <label class="option-label">Tab Preview</label>
-            <span class="option-sub">Show a dynamic widescreen visual preview panel.</span>
-          </div>
-          <div class="option-control">
-            <label class="switch">
-              <input type="checkbox" id="layoutToggle">
-              <span class="slider"></span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Developer Logs Toggle -->
-        <div class="option-row">
-          <div class="option-info">
-            <label class="option-label">Developer Logs</label>
-            <span class="option-sub">Enable debug console logs in developer tools.</span>
-          </div>
-          <div class="option-control">
-            <label class="switch">
-              <input type="checkbox" id="devToggle">
-              <span class="slider"></span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Shortcut Trigger Recorder -->
-        <div class="option-row shortcut-row">
-          <div class="option-info">
-            <label class="option-label">Custom Trigger Shortcut</label>
-            <span class="option-sub">Record your keyboard combination (e.g., Alt + A).</span>
-          </div>
-          <div class="option-control shortcut-container">
-            <button id="recordShortcutBtn" class="record-btn">Alt + Q</button>
-            <button id="resetShortcutBtn" class="reset-btn" title="Reset to default Alt+Q">×</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="action-footer">
-        <button id="getStartedBtn" class="btn-primary">Finish Setup &amp; Explore Guide</button>
-      </div>
-    </div>
+    <!-- Footer -->
+    <footer class="footer">
+      <p>Cyclr &bull; Minimalist Open Source Extension</p>
+    </footer>
   </div>
 
   <script src="onboarding.js"></script>

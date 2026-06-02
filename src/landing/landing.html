@@ -15,7 +15,6 @@
         <img src="../../assets/icons/cyclr-32x32.png" class="brand-logo" alt="Cyclr Logo">
         <span class="brand-name">cyclr</span>
       </div>
-      <a href="../onboarding/onboarding.html" class="settings-link">Configure settings &rarr;</a>
     </header>
 
     <!-- Main Content -->
@@ -23,6 +22,9 @@
       <section class="intro">
         <h1 class="title">A keyboard-driven tab switcher for Chromium.</h1>
         <p class="subtitle">Alt+Tab style cycling with zero lag, clean layouts, and optional widescreen visual previews. Configured to align perfectly with your browser zoom.</p>
+        <div class="intro-actions">
+          <a href="#" id="downloadBtn" class="btn-primary">Download Extension (.zip) &rarr;</a>
+        </div>
       </section>
 
       <!-- Pure CSS Mockup of the Extension Switcher -->
@@ -107,16 +109,27 @@
         </div>
       </section>
 
-      <!-- Action Footer Links -->
-      <section class="cta-section">
-        <button id="chromeShortcutsBtn" class="link-btn">Configure shortcuts in Chrome &rarr;</button>
-      </section>
     </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-      <p>Cyclr &bull; Minimalist Open Source Extension</p>
-    </footer>
+    <!-- Secondary Links Section -->
+    <div class="secondary-links">
+      <a href="https://github.com/revanthlol/cyclr" target="_blank" class="secondary-link">GitHub</a>
+      <span class="divider">&bull;</span>
+      <a href="install.html" class="secondary-link">Manual Install Guide</a>
+    </div>
+  </div>
+
+  <!-- Download Confirmation Modal -->
+  <div id="downloadModal" class="modal-overlay">
+    <div class="modal-box">
+      <h3>Download Cyclr</h3>
+      <p class="modal-text">You are downloading the latest extension package (.zip).</p>
+      <p class="modal-text">Once confirmed, the download will begin and you will be redirected to the manual installation guide.</p>
+      <div class="modal-actions">
+        <button id="modalCancelBtn" class="btn-secondary">Cancel</button>
+        <button id="modalConfirmBtn" class="btn-primary">Confirm &amp; Download</button>
+      </div>
+    </div>
   </div>
 
   <script src="landing.js"></script>
