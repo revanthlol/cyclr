@@ -164,8 +164,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Go to landing page
+    // Go to web index page
     getStartedBtn.addEventListener("click", () => {
-        window.location.href = "../landing/landing.html";
+        window.location.href = "../web/index.html";
     });
 });
