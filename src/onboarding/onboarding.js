@@ -164,8 +164,26 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Go to web index page
+    // Close the onboarding setup tab with a success transition
     getStartedBtn.addEventListener("click", () => {
-        window.location.href = "../web/index.html";
+        // Change button state to show save confirmation
+        getStartedBtn.textContent = "Saved! Closing...";
+        getStartedBtn.style.backgroundColor = "#2b8a3e";
+        getStartedBtn.style.borderColor = "#40c057";
+        getStartedBtn.style.color = "#ffffff";
+        
+        setTimeout(() => {
+            try {
+                chrome.tabs.getCurrent((tab) => {
+                    if (tab && tab.id) {
+                        chrome.tabs.remove(tab.id);
+                    } else {
+                        window.close();
+                    }
+                });
+            } catch (e) {
+                window.close();
+            }
+        }, 1000);
     });
 });
