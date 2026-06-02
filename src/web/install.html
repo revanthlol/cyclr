@@ -37,7 +37,7 @@
               </li>
               <li>
                 <span class="list-bullet">Step 2</span>
-                <span class="list-text">Open the Chrome extensions manager page by navigating to <kbd>chrome://extensions</kbd>. Enable the **Developer Mode** toggle in the top-right corner.</span>
+                <span class="list-text">Open the Chrome extensions manager page by copying and navigating to <kbd>chrome://extensions</kbd> in a new tab. <button id="copyUrlBtn" class="btn-copy">Copy URL</button> <span class="instruction-muted">(paste it in a new tab's URL bar)</span>. Then, enable the **Developer Mode** toggle in the top-right corner.</span>
               </li>
               <li>
                 <span class="list-bullet">Step 3</span>
@@ -57,6 +57,26 @@
       </div>
     </div>
   </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const copyUrlBtn = document.getElementById("copyUrlBtn");
+        if (copyUrlBtn) {
+            copyUrlBtn.addEventListener("click", () => {
+                navigator.clipboard.writeText("chrome://extensions").then(() => {
+                    copyUrlBtn.textContent = "Copied!";
+                    copyUrlBtn.classList.add("copied");
+                    setTimeout(() => {
+                        copyUrlBtn.textContent = "Copy URL";
+                        copyUrlBtn.classList.remove("copied");
+                    }, 2000);
+                }).catch(err => {
+                    console.error("Failed to copy URL:", err);
+                });
+            });
+        }
+    });
+  </script>
 </body>
 </html>
 

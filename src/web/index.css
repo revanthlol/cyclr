@@ -455,3 +455,36 @@ kbd {
     color: #ffffff;
 }
 
+/* Copy URL Button (Manual Install Guide) */
+.btn-copy {
+    background-color: #1e1e24;
+    border: 1px solid #3a3a42;
+    border-radius: 4px;
+    color: #f1f5f9;
+    font-family: inherit;
+    font-size: 11px;
+    padding: 3px 8px;
+    margin-left: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-copy:hover {
+    background-color: #2a2a32;
+    border-color: #5c7cfa;
+}
+
+.btn-copy.copied {
+    background-color: #2b8a3e;
+    border-color: #40c057;
+    color: #ffffff;
+}
+
+.instruction-muted {
+    font-size: 12px;
+    color: #48484a;
+    margin-left: 8px;
+    display: inline-block;
+}
+
+
