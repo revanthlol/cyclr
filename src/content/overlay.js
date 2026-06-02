@@ -102,6 +102,23 @@ if (window === window.top) {
                 align-items: center;
                 z-index: 2147483647;
                 font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                opacity: 0;
+                transition: opacity 220ms cubic-bezier(0.4, 0, 0.2, 1), backdrop-filter 220ms cubic-bezier(0.4, 0, 0.2, 1), -webkit-backdrop-filter 220ms cubic-bezier(0.4, 0, 0.2, 1);
+                pointer-events: none;
+            }
+
+            .overlay-backdrop.visible {
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            .overlay-backdrop.no-animations {
+                transition: none !important;
+            }
+
+            .overlay-backdrop.blur-enabled {
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
             }
 
             .overlay-container {
@@ -222,9 +239,10 @@ if (window === window.top) {
             /* Split layout style for preview mode */
             .overlay-container.preview-layout {
                 flex-direction: row !important;
-                width: 772px !important;
+                width: 975px !important;
+                height: 314px !important;
                 gap: 12px !important;
-                align-items: center !important;
+                align-items: stretch !important;
             }
 
             .preview-panel {
@@ -237,6 +255,16 @@ if (window === window.top) {
                 box-sizing: border-box;
                 flex-shrink: 0;
                 overflow: hidden;
+            }
+
+            .overlay-container.preview-layout .preview-panel {
+                width: 483px !important;
+                height: 100% !important;
+            }
+
+            .overlay-container.preview-layout .list-panel {
+                height: 100% !important;
+                max-height: none !important;
             }
 
             .overlay-backdrop.dark-theme .preview-panel {
@@ -403,7 +431,7 @@ if (window === window.top) {
     }
 
     // Dynamic rendering function to populate list
-    function renderOverlay(tabs, selectedIndex, theme, layoutMode, zoomFactor, uiScale) {
+    function renderOverlay(tabs, selectedIndex, theme, layoutMode, zoomFactor, uiScale, enableAnimations, enableBlur) {
         initOverlay();
 
         if (isActive) {
@@ -423,6 +451,18 @@ if (window === window.top) {
         currentSelectedIndex = selectedIndex;
 
         const backdrop = shadow.querySelector(".overlay-backdrop");
+        if (enableAnimations === false) {
+            backdrop.classList.add("no-animations");
+        } else {
+            backdrop.classList.remove("no-animations");
+        }
+
+        if (enableBlur) {
+            backdrop.classList.add("blur-enabled");
+        } else {
+            backdrop.classList.remove("blur-enabled");
+        }
+
         if (theme === "light") {
             backdrop.classList.add("light-theme");
             backdrop.classList.remove("dark-theme");
@@ -509,6 +549,9 @@ if (window === window.top) {
         container.style.transformOrigin = "center center";
 
         overlayRoot.style.display = "block";
+        // Force reflow and add visible class for fade-in transition
+        backdrop.offsetHeight;
+        backdrop.classList.add("visible");
 
         // Steal keyboard focus to the backdrop so keyup events (e.g. Alt release)
         // are guaranteed to reach this frame's window listener. Without this, on
@@ -728,7 +771,7 @@ if (window === window.top) {
             sendResponse({ active: true });
             return true;
         } else if (msg.type === "cyclr-render") {
-            renderOverlay(msg.tabs, msg.selectedIndex, msg.theme, msg.layoutMode, msg.zoomFactor, msg.uiScale);
+            renderOverlay(msg.tabs, msg.selectedIndex, msg.theme, msg.layoutMode, msg.zoomFactor, msg.uiScale, msg.enableAnimations, msg.enableBlur);
         } else if (msg.type === "cyclr-close") {
             isActive = false;
             isScrolling = false;
@@ -736,8 +779,21 @@ if (window === window.top) {
             lastMouseX = null;
             lastMouseY = null;
             currentSelectedIndex = 0;
-            if (overlayRoot) {
-                overlayRoot.style.display = "none";
+            const backdrop = shadow ? shadow.querySelector(".overlay-backdrop") : null;
+            if (backdrop && !backdrop.classList.contains("no-animations")) {
+                backdrop.classList.remove("visible");
+                setTimeout(() => {
+                    if (!isActive && overlayRoot) {
+                        overlayRoot.style.display = "none";
+                    }
+                }, 230);
+            } else {
+                if (backdrop) {
+                    backdrop.classList.remove("visible");
+                }
+                if (overlayRoot) {
+                    overlayRoot.style.display = "none";
+                }
             }
             // Restore focus to wherever it was before overlay opened
             if (previousFocus && typeof previousFocus.focus === "function") {

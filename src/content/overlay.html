@@ -1,0 +1,40 @@
+<!-- 
+  Cyclr Tab Switcher Overlay Structure.
+  This file serves as a visual template and documentation for the elements created
+  dynamically inside the Shadow DOM at runtime by overlay.js.
+-->
+<div id="cyclr-overlay-root">
+    <!-- Shadow Root Boundary (Open) -->
+    <div class="overlay-backdrop">
+        <!-- overlay-container can have the "preview-layout" class dynamically appended -->
+        <div class="overlay-container preview-layout">
+            
+            <!-- preview-panel is only rendered in "preview" mode layout -->
+            <div class="preview-panel">
+                <!-- Selected tab's live screenshot OR centered favicon/placeholder -->
+                <img class="preview-screenshot" src="..." alt="Tab Preview" />
+                <!-- OR -->
+                <img class="preview-favicon" src="..." alt="Favicon" />
+                <!-- OR -->
+                <div class="preview-favicon-placeholder">T</div>
+            </div>
+            
+            <!-- list-panel contains the list of active/open tabs -->
+            <div class="list-panel">
+                <!-- Repeating tab-row elements for each open tab -->
+                <div class="tab-row selected active-tab">
+                    <img class="favicon" src="..." alt="Favicon" />
+                    <!-- OR -->
+                    <div class="favicon-placeholder">A</div>
+                    <span class="tab-title">Active and Selected Tab Title</span>
+                </div>
+                
+                <div class="tab-row">
+                    <img class="favicon" src="..." alt="Favicon" />
+                    <span class="tab-title">Another Tab Title</span>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>

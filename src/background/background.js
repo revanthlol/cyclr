@@ -177,7 +177,9 @@ async function getSettings() {
             orderMode: "tab-order",
             theme: "dark",
             layoutMode: "list",
-            uiScale: "1.0"
+            uiScale: "1.0",
+            enableAnimations: true,
+            enableBlur: false
         }, (items) => {
             resolve(items);
         });
@@ -219,7 +221,9 @@ async function broadcastRender() {
             theme: settings.theme, // Pass theme mode ("dark" or "light")
             layoutMode: settings.layoutMode, // Pass layoutMode ("list" or "preview")
             zoomFactor: zoomFactor, // Pass tab's webpage zoom level to counteract it
-            uiScale: parseFloat(settings.uiScale || "1.0") // Pass visual UI scaling factor
+            uiScale: parseFloat(settings.uiScale || "1.0"), // Pass visual UI scaling factor
+            enableAnimations: !!settings.enableAnimations, // Pass animations toggle!
+            enableBlur: !!settings.enableBlur // Pass blur toggle!
         });
     } catch (err) {
         warn("[CYCLR] Broadcast render failed:", err);

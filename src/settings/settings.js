@@ -3,6 +3,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const themeSelect = document.getElementById("themeMode");
     const layoutToggle = document.getElementById("layoutToggle");
     const devToggle = document.getElementById("devToggle");
+    const animationsToggle = document.getElementById("animationsToggle");
+    const blurToggle = document.getElementById("blurToggle");
     const uiScaleSelect = document.getElementById("uiScale");
     const recordBtn = document.getElementById("recordShortcutBtn");
     const resetBtn = document.getElementById("resetShortcutBtn");
@@ -18,7 +20,9 @@ document.addEventListener("DOMContentLoaded", () => {
         theme: "dark",
         layoutMode: "list",
         devMode: false,
-        uiScale: "1.0"
+        uiScale: "1.0",
+        enableAnimations: true,
+        enableBlur: false
     }, (items) => {
         devMode = !!items.devMode;
         orderSelect.value = items.orderMode;
@@ -26,6 +30,8 @@ document.addEventListener("DOMContentLoaded", () => {
         layoutToggle.checked = (items.layoutMode === "preview");
         devToggle.checked = devMode;
         uiScaleSelect.value = items.uiScale;
+        animationsToggle.checked = !!items.enableAnimations;
+        blurToggle.checked = !!items.enableBlur;
     });
 
     orderSelect.addEventListener("change", () => {
@@ -57,6 +63,18 @@ document.addEventListener("DOMContentLoaded", () => {
     uiScaleSelect.addEventListener("change", () => {
         chrome.storage.local.set({ uiScale: uiScaleSelect.value }, () => {
             log("[CYCLR] Saved uiScale:", uiScaleSelect.value);
+        });
+    });
+
+    animationsToggle.addEventListener("change", () => {
+        chrome.storage.local.set({ enableAnimations: animationsToggle.checked }, () => {
+            log("[CYCLR] Saved enableAnimations:", animationsToggle.checked);
+        });
+    });
+
+    blurToggle.addEventListener("change", () => {
+        chrome.storage.local.set({ enableBlur: blurToggle.checked }, () => {
+            log("[CYCLR] Saved enableBlur:", blurToggle.checked);
         });
     });
 
