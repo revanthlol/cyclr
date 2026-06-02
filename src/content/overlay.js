@@ -5,6 +5,10 @@ if (window === window.top) {
     let isActive = false;
     let customShortcut = null;
     let devMode = false;
+    let lastMouseX = 0;
+    let lastMouseY = 0;
+    let isScrolling = false;
+    let scrollTimeout = null;
 
     // Helper to log only when devMode is active
     function log(...args) {
@@ -151,6 +155,7 @@ if (window === window.top) {
                 gap: 10px;
                 box-sizing: border-box;
                 transition: background-color 50ms ease;
+                flex-shrink: 0;
             }
 
             /* Selected Row has unified colors for visual consistency */
@@ -272,6 +277,29 @@ if (window === window.top) {
                 flex-direction: column;
                 gap: 2px;
                 flex-grow: 1;
+                max-height: 302px; /* Restrict height to exactly 8 tab rows */
+                overflow-y: auto;
+            }
+
+            /* Custom subtle scrollbar styling inside Shadow DOM */
+            .list-panel::-webkit-scrollbar {
+                width: 6px;
+            }
+            .list-panel::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            .list-panel::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.18);
+                border-radius: 3px;
+            }
+            .overlay-backdrop.light-theme .list-panel::-webkit-scrollbar-thumb {
+                background: rgba(0, 0, 0, 0.15);
+            }
+            .list-panel::-webkit-scrollbar-thumb:hover {
+                background: rgba(255, 255, 255, 0.35);
+            }
+            .overlay-backdrop.light-theme .list-panel::-webkit-scrollbar-thumb:hover {
+                background: rgba(0, 0, 0, 0.28);
             }
         `;
         shadow.appendChild(styleEl);
@@ -348,7 +376,21 @@ if (window === window.top) {
             container.appendChild(listPanel);
         } else {
             container.classList.remove("preview-layout");
-            renderTabRows(container, tabs, selectedIndex);
+            const listPanel = document.createElement("div");
+            listPanel.className = "list-panel";
+            renderTabRows(listPanel, tabs, selectedIndex);
+            container.appendChild(listPanel);
+        }
+
+        const listPanelEl = container.querySelector(".list-panel");
+        if (listPanelEl) {
+            listPanelEl.addEventListener("scroll", () => {
+                isScrolling = true;
+                if (scrollTimeout) clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    isScrolling = false;
+                }, 150);
+            }, { passive: true });
         }
 
         // Apply scale transformation to perfectly counteract page zoom and apply user UI scaling
@@ -393,7 +435,22 @@ if (window === window.top) {
             row.appendChild(titleSpan);
 
             // Mouse fallbacks
-            row.addEventListener("mouseenter", () => {
+            row.addEventListener("mousemove", (e) => {
+                if (isScrolling) return;
+
+                // Track actual screen movement to prevent false triggers during scrolling
+                if (e.clientX === lastMouseX && e.clientY === lastMouseY) {
+                    return;
+                }
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
+
+                // Ignore hover selection near the right edge (scrollbar area)
+                const rect = row.getBoundingClientRect();
+                if (e.clientX >= rect.right - 14) {
+                    return;
+                }
+
                 if (index !== selectedIndex) {
                     chrome.runtime.sendMessage({
                         type: "cyclr-change-selected",
@@ -409,6 +466,14 @@ if (window === window.top) {
 
             targetContainer.appendChild(row);
         });
+
+        // Scroll the selected row into view so navigation beyond 8 tabs is visible
+        setTimeout(() => {
+            const selectedRow = targetContainer.querySelector(".tab-row.selected");
+            if (selectedRow) {
+                selectedRow.scrollIntoView({ block: "nearest", behavior: "auto" });
+            }
+        }, 0);
     }
 
     // Helper to check if a keyboard event matches the configured custom shortcut
@@ -512,6 +577,7 @@ if (window === window.top) {
             renderOverlay(msg.tabs, msg.selectedIndex, msg.theme, msg.layoutMode, msg.zoomFactor, msg.uiScale);
         } else if (msg.type === "cyclr-close") {
             isActive = false;
+            isScrolling = false;
             if (overlayRoot) {
                 overlayRoot.style.display = "none";
             }

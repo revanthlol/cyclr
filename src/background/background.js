@@ -29,7 +29,7 @@ const state = {
     sourceTabId: null
 };
 
-const MAX_VISIBLE_TABS = 8;
+const MAX_VISIBLE_TABS = 100;
 let tabHistory = []; // Array of tab IDs in MRU order (most recent first)
 const tabScreenshots = {}; // Cache of tab screenshots: tabId -> dataURL
 
@@ -50,7 +50,16 @@ async function initializeTabHistory() {
     }
 }
 
-chrome.runtime.onInstalled.addListener(initializeTabHistory);
+chrome.runtime.onInstalled.addListener(async (details) => {
+    if (details.reason === "install") {
+        try {
+            chrome.tabs.create({ url: chrome.runtime.getURL("src/onboarding/onboarding.html") });
+        } catch (e) {
+            error("[CYCLR] Failed to open onboarding page on install:", e);
+        }
+    }
+    await initializeTabHistory();
+});
 chrome.runtime.onStartup.addListener(initializeTabHistory);
 
 // Helper to ensure tabHistory is populated
@@ -253,7 +262,7 @@ async function triggerOpen() {
             const activeIndex = tabs.findIndex(t => t.id === activeTab.id);
             let prevActiveIndex = (activeIndex !== -1) ? (activeIndex + 1) % tabs.length : 0;
             
-            if (tabHistory.length > 1) {
+            if (settings.orderMode === "mru" && tabHistory.length > 1) {
                 const prevActiveId = tabHistory.find(id => id !== activeTab.id && tabs.some(t => t.id === id));
                 if (prevActiveId) {
                     const idx = tabs.findIndex(t => t.id === prevActiveId);
@@ -308,7 +317,7 @@ async function triggerOpen() {
         const activeIndex = tabs.findIndex(t => t.id === activeTab.id);
         let initialIndex = (activeIndex !== -1) ? (activeIndex + 1) % tabs.length : 0;
         
-        if (tabHistory.length > 1) {
+        if (settings.orderMode === "mru" && tabHistory.length > 1) {
             const prevActiveId = tabHistory.find(id => id !== activeTab.id && tabs.some(t => t.id === id));
             if (prevActiveId) {
                 const idx = tabs.findIndex(t => t.id === prevActiveId);

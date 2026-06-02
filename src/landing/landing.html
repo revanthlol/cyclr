@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cyclr — Minimalist Tab Switcher</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="landing.css">
+</head>
+<body>
+  <div class="landing-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="brand">
+        <img src="../../assets/icons/cyclr-32x32.png" class="brand-logo" alt="Cyclr Logo">
+        <span class="brand-name">cyclr</span>
+      </div>
+      <a href="../onboarding/onboarding.html" class="settings-link">Configure settings &rarr;</a>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <section class="intro">
+        <h1 class="title">A keyboard-driven tab switcher for Chromium.</h1>
+        <p class="subtitle">Alt+Tab style cycling with zero lag, clean layouts, and optional widescreen visual previews. Configured to align perfectly with your browser zoom.</p>
+      </section>
+
+      <!-- Pure CSS Mockup of the Extension Switcher -->
+      <section class="mockup-section">
+        <div class="mockup-browser">
+          <div class="mockup-dots">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+          </div>
+          <div class="mockup-overlay-container">
+            <div class="mockup-preview-panel">
+              <div class="mockup-preview-favicon-placeholder">W</div>
+            </div>
+            <div class="mockup-list-panel">
+              <div class="mockup-tab-row active-tab">
+                <span class="mockup-favicon">💬</span>
+                <span class="mockup-tab-title">WhatsApp Business</span>
+              </div>
+              <div class="mockup-tab-row selected">
+                <span class="mockup-favicon">🤖</span>
+                <span class="mockup-tab-title">Auto Cropping Tools</span>
+              </div>
+              <div class="mockup-tab-row">
+                <span class="mockup-favicon">🔍</span>
+                <span class="mockup-tab-title">mru - Google Search</span>
+              </div>
+              <div class="mockup-tab-row">
+                <span class="mockup-favicon">📺</span>
+                <span class="mockup-tab-title">(60) YouTube</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- How it Works & Shortcuts -->
+      <section class="details-section">
+        <div class="details-grid">
+          <div class="details-column">
+            <h2>Controls</h2>
+            <ul class="clean-list">
+              <li>
+                <span class="list-bullet">1.</span>
+                <span class="list-text">Hold <kbd>Alt</kbd> and tap <kbd>Q</kbd> to open the switcher.</span>
+              </li>
+              <li>
+                <span class="list-bullet">2.</span>
+                <span class="list-text">Press <kbd>Q</kbd>, <kbd>ArrowDown</kbd>, or <kbd>Tab</kbd> to move down.</span>
+              </li>
+              <li>
+                <span class="list-bullet">3.</span>
+                <span class="list-text">Press <kbd>ArrowUp</kbd> or <kbd>Shift+Tab</kbd> to move up.</span>
+              </li>
+              <li>
+                <span class="list-bullet">4.</span>
+                <span class="list-text">Release <kbd>Alt</kbd> to instantly switch to the selected tab.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="details-column">
+            <h2>Features</h2>
+            <ul class="clean-list">
+              <li>
+                <span class="list-bullet">&mdash;</span>
+                <span class="list-text">MRU (Most Recently Used) or Tab Strip order modes.</span>
+              </li>
+              <li>
+                <span class="list-bullet">&mdash;</span>
+                <span class="list-text">Sleek dark and light themes that match your browser.</span>
+              </li>
+              <li>
+                <span class="list-bullet">&mdash;</span>
+                <span class="list-text">Custom shortcuts (e.g. <kbd>Alt</kbd>+<kbd>A</kbd>) configurable in options.</span>
+              </li>
+              <li>
+                <span class="list-bullet">&mdash;</span>
+                <span class="list-text">counter-zoom scaling to keep dimensions perfect at all zoom levels.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Action Footer Links -->
+      <section class="cta-section">
+        <button id="chromeShortcutsBtn" class="link-btn">Configure shortcuts in Chrome &rarr;</button>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>Cyclr &bull; Minimalist Open Source Extension</p>
+    </footer>
+  </div>
+
+  <script src="landing.js"></script>
+</body>
+</html>
