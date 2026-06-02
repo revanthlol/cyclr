@@ -48,18 +48,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (modalConfirmBtn && downloadModal) {
-        // Perform download and redirect on Confirm click
+        // Redirect to install page with the download URL as query parameter on Confirm click
         modalConfirmBtn.addEventListener("click", () => {
-            // Trigger the ZIP download in a new window/tab
-            window.open(downloadUrl, "_blank");
-            
             // Close the modal
             downloadModal.classList.remove("active");
             
-            // Redirect the current window to the manual installation guide page after 500ms
-            setTimeout(() => {
-                window.location.href = "install.html";
-            }, 500);
+            // Redirect current window to the manual installation guide page with download param
+            window.location.href = `install.html?download=${encodeURIComponent(downloadUrl)}`;
         });
     }
 });

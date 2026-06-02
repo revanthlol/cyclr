@@ -68,6 +68,16 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
+        // Trigger download if query param is present
+        const urlParams = new URLSearchParams(window.location.search);
+        const downloadUrl = urlParams.get("download");
+        if (downloadUrl) {
+            setTimeout(() => {
+                // Navigate current page to download url (browser handles it as file download in background)
+                window.location.href = downloadUrl;
+            }, 800);
+        }
+
         const copyUrlBtn = document.getElementById("copyUrlBtn");
         if (copyUrlBtn) {
             copyUrlBtn.addEventListener("click", () => {
