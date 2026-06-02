@@ -9,12 +9,10 @@ document.addEventListener("DOMContentLoaded", () => {
     let isRecording = false;
     let devMode = false;
 
-    // Helper to log only when devMode is active
     function log(...args) {
         if (devMode) console.log(...args);
     }
 
-    // Load saved settings (defaulting to tab-strip order, dark theme, list layout, dev mode off, and medium scale)
     chrome.storage.local.get({
         orderMode: "tab-order",
         theme: "dark",
@@ -30,68 +28,97 @@ document.addEventListener("DOMContentLoaded", () => {
         uiScaleSelect.value = items.uiScale;
     });
 
-    // Save changes immediately on select selection
     orderSelect.addEventListener("change", () => {
-        chrome.storage.local.set({
-            orderMode: orderSelect.value
-        }, () => {
+        chrome.storage.local.set({ orderMode: orderSelect.value }, () => {
             log("[CYCLR] Saved orderMode:", orderSelect.value);
         });
     });
 
     themeSelect.addEventListener("change", () => {
-        chrome.storage.local.set({
-            theme: themeSelect.value
-        }, () => {
+        chrome.storage.local.set({ theme: themeSelect.value }, () => {
             log("[CYCLR] Saved theme:", themeSelect.value);
         });
     });
 
-    // Save layout mode when the toggle is flipped
     layoutToggle.addEventListener("change", () => {
         const mode = layoutToggle.checked ? "preview" : "list";
-        chrome.storage.local.set({
-            layoutMode: mode
-        }, () => {
+        chrome.storage.local.set({ layoutMode: mode }, () => {
             log("[CYCLR] Saved layoutMode:", mode);
         });
     });
 
-    // Save devMode when the toggle is flipped
     devToggle.addEventListener("change", () => {
         devMode = devToggle.checked;
-        chrome.storage.local.set({
-            devMode: devMode
-        }, () => {
-            // Log this specific toggle message as feedback to console only if it is checked
+        chrome.storage.local.set({ devMode }, () => {
             if (devMode) console.log("[CYCLR] Dev logging enabled!");
         });
     });
 
-    // Save Switcher Scale selection
     uiScaleSelect.addEventListener("change", () => {
-        chrome.storage.local.set({
-            uiScale: uiScaleSelect.value
-        }, () => {
+        chrome.storage.local.set({ uiScale: uiScaleSelect.value }, () => {
             log("[CYCLR] Saved uiScale:", uiScaleSelect.value);
         });
     });
 
-    // Load and display custom shortcut key
+    // Human-readable labels for keys that aren't a single printable character.
+    // Keyed by e.code (physical key — locale-independent, always reliable).
+    const CODE_LABELS = {
+        "Backquote":    "`",
+        "Minus":        "-",
+        "Equal":        "=",
+        "BracketLeft":  "[",
+        "BracketRight": "]",
+        "Backslash":    "\\",
+        "Semicolon":    ";",
+        "Quote":        "'",
+        "Comma":        ",",
+        "Period":       ".",
+        "Slash":        "/",
+        "Space":        "Space",
+        "Enter":        "Enter",
+        "Backspace":    "Backspace",
+        "Delete":       "Delete",
+        "Tab":          "Tab",
+        "ArrowUp":      "↑",
+        "ArrowDown":    "↓",
+        "ArrowLeft":    "←",
+        "ArrowRight":   "→",
+    };
+
+    // Derive a clean display label for the non-modifier key part of a shortcut.
+    // Prefers e.code (stored as s.code) because it's locale-independent.
+    // Falls back to e.key (stored as s.key) for letter/digit keys.
+    function getKeyLabel(s) {
+        // Use code-based label if we have one
+        if (s.code && CODE_LABELS[s.code] !== undefined) {
+            return CODE_LABELS[s.code];
+        }
+        // Letter keys: code is "KeyQ" → label "Q"
+        if (s.code && /^Key[A-Z]$/.test(s.code)) {
+            return s.code.slice(3); // "KeyQ" → "Q"
+        }
+        // Digit keys: code is "Digit1" → label "1"
+        if (s.code && /^Digit\d$/.test(s.code)) {
+            return s.code.slice(5); // "Digit1" → "1"
+        }
+        // Fall back to e.key value if it's a normal printable char
+        if (s.key && s.key !== "Unidentified" && s.key !== "Dead" && s.key.length === 1) {
+            return s.key.toUpperCase();
+        }
+        // Last resort: use the raw code name or a question mark
+        return s.code || s.key || "?";
+    }
+
     function updateShortcutDisplay() {
         chrome.storage.local.get("customShortcut", (data) => {
-            if (data.customShortcut) {
-                const s = data.customShortcut;
+            const s = data.customShortcut;
+            if (s && (s.key || s.code)) {
                 const parts = [];
-                if (s.ctrlKey) parts.push("Ctrl");
-                if (s.altKey) parts.push("Alt");
+                if (s.ctrlKey)  parts.push("Ctrl");
+                if (s.altKey)   parts.push("Alt");
                 if (s.shiftKey) parts.push("Shift");
-                if (s.metaKey) parts.push("Meta");
-                
-                // Capitalize single characters or use key names
-                const keyDisplay = s.key.length === 1 ? s.key.toUpperCase() : s.key;
-                parts.push(keyDisplay);
-                
+                if (s.metaKey)  parts.push("Meta");
+                parts.push(getKeyLabel(s));
                 recordBtn.textContent = parts.join(" + ");
                 resetBtn.style.display = "block";
             } else {
@@ -103,7 +130,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     updateShortcutDisplay();
 
-    // Reset shortcut back to default Alt+Q
     resetBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         chrome.storage.local.remove("customShortcut", () => {
@@ -112,7 +138,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Record shortcut listener
     recordBtn.addEventListener("click", () => {
         if (isRecording) {
             stopRecording();
@@ -139,14 +164,12 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
         e.stopPropagation();
 
-        // Do not record pure modifier key presses
-        if (["Control", "Alt", "Shift", "Meta"].includes(e.key)) {
-            return;
-        }
+        // Ignore bare modifier presses
+        if (["Control", "Alt", "Shift", "Meta"].includes(e.key)) return;
 
-        // Require at least one modifier key to avoid breaking general page inputs
+        // Require at least one modifier
         if (!e.altKey && !e.ctrlKey && !e.shiftKey && !e.metaKey) {
-            const oldText = recordBtn.textContent;
+            const prev = recordBtn.textContent;
             recordBtn.textContent = "Hold modifier!";
             setTimeout(() => {
                 if (isRecording) recordBtn.textContent = "Press keys...";
@@ -154,14 +177,19 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        // FIX: store BOTH e.key (character) and e.code (physical key name).
+        // e.code is locale/modifier-independent — "Backquote" is always "Backquote"
+        // even when Ctrl makes e.key come back as "Dead" or "Unidentified" on Linux.
         const customShortcut = {
-            key: e.key,
-            altKey: e.altKey,
-            ctrlKey: e.ctrlKey,
+            key:      e.key,    // "`", "q", "Dead", "Unidentified", etc.
+            code:     e.code,   // "Backquote", "KeyQ", "Digit1", etc. — always reliable
+            altKey:   e.altKey,
+            ctrlKey:  e.ctrlKey,
             shiftKey: e.shiftKey,
-            metaKey: e.metaKey
+            metaKey:  e.metaKey,
         };
 
+        log("[CYCLR] Recording shortcut:", customShortcut);
         chrome.storage.local.set({ customShortcut }, () => {
             log("[CYCLR] Custom shortcut saved:", customShortcut);
             stopRecording();

@@ -591,18 +591,50 @@ if (window === window.top) {
         }, 0);
     }
 
-    // Helper to check if a keyboard event matches the configured custom shortcut
+    // Map e.code values → the unshifted character they produce.
+    // Needed because symbol/punctuation keys don't follow the "Key"+letter pattern.
+    const CODE_TO_KEY = {
+        "backquote":    "`",  "minus":        "-",  "equal":   "=",
+        "backslash":    "\\", "bracketleft":  "[",  "bracketright": "]",
+        "semicolon":    ";",  "quote":        "'",  "comma":   ",",
+        "period":       ".",  "slash":        "/",
+    };
+
+    // Helper to check if a keyboard event matches the configured custom shortcut.
+    // Handles letter keys (e.code "KeyQ"), digit keys (e.code "Digit1"),
+    // and symbol keys (e.code "Backquote" ↔ e.key "`") regardless of whether
+    // the popup stored the shortcut as the character ("`") or the code name ("Backquote").
+    // Also does a direct e.code match against customShortcut.code (stored by the
+    // updated popup) which is locale/modifier-independent — critical for keys like
+    // Ctrl+` where Linux can give e.key = "Dead" or "Unidentified" at trigger time.
     function matchesCustomShortcut(e) {
-        if (!customShortcut) return false;
+        if (!customShortcut || (!customShortcut.key && !customShortcut.code)) return false;
 
-        const matchesKey = e.key.toLowerCase() === customShortcut.key.toLowerCase() ||
-                           e.code.toLowerCase() === ("key" + customShortcut.key).toLowerCase() ||
-                           e.code.toLowerCase() === customShortcut.key.toLowerCase();
+        const stored     = (customShortcut.key  || "").toLowerCase();
+        const storedCode = (customShortcut.code || "").toLowerCase();
+        const keyLower   = e.key.toLowerCase();
+        const codeLower  = e.code.toLowerCase();
 
-        const matchesModifiers = e.altKey === !!customShortcut.altKey &&
-                                 e.ctrlKey === !!customShortcut.ctrlKey &&
-                                 e.shiftKey === !!customShortcut.shiftKey &&
-                                 e.metaKey === !!customShortcut.metaKey;
+        const matchesKey =
+            // Direct e.code match — most reliable, locale-independent
+            (storedCode && codeLower === storedCode)        ||  // "backquote" === "backquote" ✓
+            // e.key character match
+            (stored && keyLower  === stored)                ||  // "`" === "`"
+            // e.code vs stored key name
+            (stored && codeLower === stored)                ||  // "backquote" === "backquote"
+            (stored && codeLower === "key"   + stored)      ||  // "keyq" === "key"+"q"
+            (stored && codeLower === "digit" + stored)      ||  // "digit1" === "digit"+"1"
+            // symbol key cross-matching via CODE_TO_KEY table
+            (stored && CODE_TO_KEY[codeLower] === stored)   ||  // code→char lookup
+            (stored && Object.keys(CODE_TO_KEY).some(           // char→code lookup
+                c => CODE_TO_KEY[c] === stored && codeLower === c
+            ));
+
+        const matchesModifiers =
+            e.altKey   === !!customShortcut.altKey   &&
+            e.ctrlKey  === !!customShortcut.ctrlKey  &&
+            e.shiftKey === !!customShortcut.shiftKey &&
+            e.metaKey  === !!customShortcut.metaKey;
 
         return matchesKey && matchesModifiers;
     }
