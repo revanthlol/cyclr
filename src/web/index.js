@@ -93,6 +93,17 @@ document.addEventListener("DOMContentLoaded", () => {
             return response.json();
         })
         .then(data => {
+            if (data && data.tag_name) {
+                const version = data.tag_name;
+                const versionSpan = document.createElement("span");
+                versionSpan.className = "version-badge";
+                versionSpan.textContent = version;
+                if (downloadBtn) {
+                    downloadBtn.innerHTML = `Download Extension (.zip) `;
+                    downloadBtn.appendChild(versionSpan);
+                    downloadBtn.appendChild(document.createTextNode(" \u2192"));
+                }
+            }
             if (data && data.assets && data.assets.length > 0) {
                 // Look for a zip file asset
                 const zipAsset = data.assets.find(asset => asset.name.endsWith(".zip"));

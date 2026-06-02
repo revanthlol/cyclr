@@ -423,6 +423,19 @@ kbd {
     background-color: #ffffff;
 }
 
+.version-badge {
+    display: inline-block;
+    background-color: #1e1e24;
+    border: 1px solid #333340;
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #8e8e93;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
 /* Secondary Links (replacing traditional footer) */
 .secondary-links {
     display: flex;
