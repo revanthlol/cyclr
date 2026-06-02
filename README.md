@@ -2,46 +2,9 @@
 
 A lightweight, keyboard-driven tab switcher for Chromium browsers, inspired by OS-level Alt-Tab menus.
 
-<br>
+## Preview
 
-<div align="center">
-<div style="display:inline-block;background:#121214;border:1px solid #252526;border-radius:8px;padding:16px;font-family:system-ui,-apple-system,sans-serif;">
-  <div style="margin-bottom:14px;">
-    <span style="width:8px;height:8px;border-radius:50%;background:#ff5f56;display:inline-block;"></span>&nbsp;
-    <span style="width:8px;height:8px;border-radius:50%;background:#ffbd2e;display:inline-block;"></span>&nbsp;
-    <span style="width:8px;height:8px;border-radius:50%;background:#27c93f;display:inline-block;"></span>
-  </div>
-  <table style="background:#252526;border:1px solid #3c3c3c;border-radius:8px;" cellpadding="0" cellspacing="0">
-  <tr>
-    <td style="padding:6px;vertical-align:middle;">
-      <img src="src/web/previews/preview-github.jpeg" width="200" height="125" style="border-radius:6px;display:block;">
-    </td>
-    <td style="padding:6px 6px 6px 0;vertical-align:top;">
-      <table cellpadding="0" cellspacing="2">
-        <tr>
-          <td style="padding:8px 4px 8px 8px;border-radius:4px 0 0 4px;background:#5c7cfa;"><img src="https://www.google.com/s2/favicons?domain=github.com&sz=32" width="16" height="16" style="display:block;"></td>
-          <td style="padding:8px 12px 8px 4px;border-radius:0 4px 4px 0;background:#5c7cfa;color:#ffffff;font-size:12px;font-weight:500;white-space:nowrap;">GitHub — revanthlol/cyclr</td>
-        </tr>
-        <tr>
-          <td style="padding:8px 4px 8px 8px;"><img src="src/web/icon.png" width="16" height="16" style="display:block;border-radius:3px;"></td>
-          <td style="padding:8px 12px 8px 4px;color:#cccccc;font-size:12px;white-space:nowrap;">Cyclr — Minimal Tab Switcher</td>
-        </tr>
-        <tr>
-          <td style="padding:8px 4px 8px 8px;"><img src="https://www.google.com/s2/favicons?domain=whatsapp.com&sz=32" width="16" height="16" style="display:block;"></td>
-          <td style="padding:8px 12px 8px 4px;color:#cccccc;font-size:12px;white-space:nowrap;">WhatsApp Web</td>
-        </tr>
-        <tr>
-          <td style="padding:8px 4px 8px 8px;"><img src="https://www.google.com/s2/favicons?domain=google.com&sz=32" width="16" height="16" style="display:block;"></td>
-          <td style="padding:8px 12px 8px 4px;color:#cccccc;font-size:12px;white-space:nowrap;">Google Search — tab switcher for chrome</td>
-        </tr>
-      </table>
-    </td>
-  </tr>
-  </table>
-</div>
-</div>
-
-<br>
+![Cyclr Preview](assets/screenshots/screenshot.jpeg)
 
 **→ [cyclr landing page](https://revanthlol.github.io/cyclr/src/web/)** &nbsp;|&nbsp; **[manual install guide](https://revanthlol.github.io/cyclr/src/web/install.html)** &nbsp;|&nbsp; **[latest release](https://github.com/revanthlol/cyclr/releases/latest)**
 
