@@ -2,12 +2,9 @@
 
 A lightweight, keyboard-driven tab switcher for Chromium browsers, inspired by OS-level Alt-Tab menus.
 
-## Preview
+## Screenshots
 
 ![Cyclr Preview](assets/screenshots/screenshot.jpeg)
-
-**→ [cyclr landing page](https://revanthlol.github.io/cyclr/src/web/)** &nbsp;|&nbsp; **[manual install guide](https://revanthlol.github.io/cyclr/src/web/install.html)** &nbsp;|&nbsp; **[latest release](https://github.com/revanthlol/cyclr/releases/latest)**
-
 
 ## Features
 
