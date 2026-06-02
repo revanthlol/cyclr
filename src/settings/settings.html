@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+  <div class="settings-header">
+    <img src="../../assets/icons/cyclr-32x32.jpg" class="settings-logo" alt="Cyclr Logo">
+    <span class="settings-title">Cyclr Settings</span>
+  </div>
+  
+  <div class="settings-body">
+    <div class="setting-group">
+      <div class="setting-label-block">
+        <span class="setting-label">Tab Order List</span>
+        <span class="setting-desc">How tabs are ordered in the switcher list.</span>
+      </div>
+      <div class="setting-control">
+        <select id="orderMode">
+          <option value="tab-order">Tab Strip Order (Default)</option>
+          <option value="mru">Recent Order (MRU)</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="setting-group">
+      <div class="setting-label-block">
+        <span class="setting-label">Theme Mode</span>
+        <span class="setting-desc">Visual appearance of the switcher overlay.</span>
+      </div>
+      <div class="setting-control">
+        <select id="themeMode">
+          <option value="dark">Dark Theme (Default)</option>
+          <option value="light">Light Theme</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <div class="setting-label-block">
+        <span class="setting-label">Tab Preview</span>
+        <span class="setting-desc">Show a dynamic icon preview panel.</span>
+      </div>
+      <div class="setting-control">
+        <label class="switch">
+          <input type="checkbox" id="layoutToggle">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <div class="setting-label-block">
+        <span class="setting-label">Developer Logs</span>
+        <span class="setting-desc">Enable console logging in devtools.</span>
+      </div>
+      <div class="setting-control">
+        <label class="switch">
+          <input type="checkbox" id="devToggle">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="setting-group">
+      <div class="setting-label-block">
+        <span class="setting-label">Switcher Scale</span>
+        <span class="setting-desc">Adjust the visual size of the overlay.</span>
+      </div>
+      <div class="setting-control">
+        <select id="uiScale">
+          <option value="0.85">Small (85%)</option>
+          <option value="1.0">Medium (100%)</option>
+          <option value="1.15">Large (115%)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="setting-group shortcut-group">
+      <div class="setting-label-block">
+        <span class="setting-label">Shortcut Trigger</span>
+        <span class="setting-desc">Record a custom keyboard shortcut to open Cyclr.</span>
+      </div>
+      <div class="setting-control shortcut-recorder-container">
+        <button id="recordShortcutBtn" class="record-btn">Alt + Q</button>
+        <button id="resetShortcutBtn" class="reset-btn" title="Reset to default Alt+Q">×</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="settings.js"></script>
+</body>
+</html>
