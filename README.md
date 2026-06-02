@@ -7,7 +7,13 @@ A lightweight, keyboard-driven tab switcher for Chromium browsers, inspired by O
 ![Cyclr Preview](assets/screenshots/screenshot.jpeg)
 
 <div align="center">
+
 **[Visit the website](https://cyclr-five.vercel.app/)**
+
+<br>
+
+**[Download the latest release](https://github.com/revanthlol/cyclr/releases/latest/download/cyclr.zip)**
+
 </div>
 
 ## Features
