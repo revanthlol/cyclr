@@ -5,10 +5,14 @@ if (window === window.top) {
     let isActive = false;
     let customShortcut = null;
     let devMode = false;
-    let lastMouseX = 0;
-    let lastMouseY = 0;
+    let lastMouseX = null;
+    let lastMouseY = null;
     let isScrolling = false;
     let scrollTimeout = null;
+    let lastActiveDevice = "keyboard";
+    // FIX 1: Module-level selected index so mousemove closures always read fresh value
+    // instead of the stale captured parameter from renderTabRows()
+    let currentSelectedIndex = 0;
 
     // Helper to log only when devMode is active
     function log(...args) {
@@ -48,28 +52,36 @@ if (window === window.top) {
         return placeholder;
     }
 
+    // FIX 2: Centralized scroll suppression — always set isScrolling BEFORE
+    // calling scrollIntoView so mousemove can't slip in between
+    function suppressScrollHover(duration = 180) {
+        isScrolling = true;
+        if (scrollTimeout) clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+            isScrolling = false;
+        }, duration);
+    }
+
     // Initialize the overlay containers once
     function initOverlay() {
         if (overlayRoot) return;
 
         overlayRoot = document.createElement("div");
         overlayRoot.id = "cyclr-overlay-root";
-        
-        // Root viewport styling
+
         overlayRoot.style.position = "fixed";
         overlayRoot.style.top = "0";
         overlayRoot.style.left = "0";
         overlayRoot.style.width = "100vw";
         overlayRoot.style.height = "100vh";
-        overlayRoot.style.zIndex = "2147483647"; // Max index
+        overlayRoot.style.zIndex = "2147483647";
         overlayRoot.style.display = "none";
         overlayRoot.style.pointerEvents = "auto";
-        
+
         document.documentElement.appendChild(overlayRoot);
 
         shadow = overlayRoot.attachShadow({ mode: "open" });
 
-        // Dual-theme solid flat Chrome UI styling (Dark/Light)
         const styleEl = document.createElement("style");
         styleEl.textContent = `
             .overlay-backdrop {
@@ -78,7 +90,7 @@ if (window === window.top) {
                 left: 0;
                 width: 100vw;
                 height: 100vh;
-                background-color: rgba(0, 0, 0, 0.08); /* Nearly clear backdrop to let the page stay perfectly bright */
+                background-color: rgba(0, 0, 0, 0.08);
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -100,9 +112,8 @@ if (window === window.top) {
             .overlay-backdrop.dark-theme .overlay-container {
                 background: #252526;
                 border: 1px solid #3c3c3c;
-                /* Rich, layered deep dark shadow for premium elevation */
-                box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45), 
-                            0 4px 16px rgba(0, 0, 0, 0.3), 
+                box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45),
+                            0 4px 16px rgba(0, 0, 0, 0.3),
                             0 0 0 1px rgba(255, 255, 255, 0.06);
             }
             .overlay-backdrop.dark-theme .tab-row {
@@ -124,9 +135,8 @@ if (window === window.top) {
             .overlay-backdrop.light-theme .overlay-container {
                 background: #ffffff;
                 border: 1px solid #dadce0;
-                /* Rich, layered light shadow for premium elevation */
-                box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15), 
-                            0 4px 16px rgba(0, 0, 0, 0.08), 
+                box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15),
+                            0 4px 16px rgba(0, 0, 0, 0.08),
                             0 0 0 1px rgba(0, 0, 0, 0.06);
             }
             .overlay-backdrop.light-theme .tab-row {
@@ -158,7 +168,6 @@ if (window === window.top) {
                 flex-shrink: 0;
             }
 
-            /* Selected Row has unified colors for visual consistency */
             .tab-row.selected {
                 background: #5c7cfa !important;
                 color: #ffffff !important;
@@ -207,21 +216,21 @@ if (window === window.top) {
             /* Split layout style for preview mode */
             .overlay-container.preview-layout {
                 flex-direction: row !important;
-                width: 772px !important; /* Widescreen width: 280px preview + 480px list + 12px gap */
+                width: 772px !important;
                 gap: 12px !important;
-                align-items: center !important; /* Center panels vertically for premium stable card styling */
+                align-items: center !important;
             }
 
             .preview-panel {
                 width: 280px !important;
-                height: 175px !important; /* Locked rectangular 16:10 aspect ratio preview */
+                height: 175px !important;
                 border-radius: 6px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 box-sizing: border-box;
                 flex-shrink: 0;
-                overflow: hidden; /* Clips screenshots to match rounded card corners */
+                overflow: hidden;
             }
 
             .overlay-backdrop.dark-theme .preview-panel {
@@ -277,47 +286,136 @@ if (window === window.top) {
                 flex-direction: column;
                 gap: 2px;
                 flex-grow: 1;
-                max-height: 302px; /* Restrict height to exactly 8 tab rows */
+                max-height: 302px;
                 overflow-y: auto;
+                overscroll-behavior: contain;
+                /* FIX 3: Hairline scrollbar — reserve exactly 4px, no layout shift */
+                scrollbar-width: thin;
+                scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+                padding-right: 4px; /* breathing room so thumb doesn't clip row text */
             }
 
-            /* Custom subtle scrollbar styling inside Shadow DOM */
+            .overlay-backdrop.light-theme .list-panel {
+                scrollbar-color: rgba(0, 0, 0, 0.13) transparent;
+            }
+
+            /* Webkit hairline scrollbar */
             .list-panel::-webkit-scrollbar {
-                width: 6px;
+                width: 3px;
             }
             .list-panel::-webkit-scrollbar-track {
                 background: transparent;
             }
+            /* Dark theme thumb */
             .list-panel::-webkit-scrollbar-thumb {
-                background: rgba(255, 255, 255, 0.18);
-                border-radius: 3px;
-            }
-            .overlay-backdrop.light-theme .list-panel::-webkit-scrollbar-thumb {
-                background: rgba(0, 0, 0, 0.15);
+                background: rgba(255, 255, 255, 0.12);
+                border-radius: 10px;
             }
             .list-panel::-webkit-scrollbar-thumb:hover {
-                background: rgba(255, 255, 255, 0.35);
+                background: rgba(255, 255, 255, 0.28);
+            }
+            /* Light theme thumb — override via backdrop class */
+            .overlay-backdrop.light-theme .list-panel::-webkit-scrollbar-thumb {
+                background: rgba(0, 0, 0, 0.13);
             }
             .overlay-backdrop.light-theme .list-panel::-webkit-scrollbar-thumb:hover {
-                background: rgba(0, 0, 0, 0.28);
+                background: rgba(0, 0, 0, 0.26);
             }
         `;
         shadow.appendChild(styleEl);
 
         const backdrop = document.createElement("div");
         backdrop.className = "overlay-backdrop";
-        
+
         const container = document.createElement("div");
         container.className = "overlay-container";
-        
+
         backdrop.appendChild(container);
         shadow.appendChild(backdrop);
+    }
+
+    // Fast visual update of selected index without full DOM rebuild
+    function updateSelection(tabs, selectedIndex) {
+        // FIX 1: Keep module-level index in sync
+        currentSelectedIndex = selectedIndex;
+
+        const listPanel = shadow.querySelector(".list-panel");
+        if (!listPanel) return;
+
+        // 1. Update row highlights
+        const rows = listPanel.querySelectorAll(".tab-row");
+        rows.forEach((row, idx) => {
+            if (idx === selectedIndex) {
+                row.classList.add("selected");
+            } else {
+                row.classList.remove("selected");
+            }
+        });
+
+        // 2. Update preview panel if present
+        const previewPanel = shadow.querySelector(".preview-panel");
+        const selectedTab = tabs[selectedIndex];
+        if (previewPanel && selectedTab) {
+            previewPanel.innerHTML = "";
+
+            if (selectedTab.screenshot) {
+                const screenshotImg = document.createElement("img");
+                screenshotImg.className = "preview-screenshot";
+                screenshotImg.src = selectedTab.screenshot;
+                previewPanel.appendChild(screenshotImg);
+            } else {
+                const favUrl = selectedTab.url
+                    ? `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(selectedTab.url)}&size=64`
+                    : (selectedTab.favIconUrl || "");
+                if (favUrl) {
+                    const bigImg = document.createElement("img");
+                    bigImg.className = "preview-favicon";
+                    bigImg.src = favUrl;
+                    bigImg.onerror = () => {
+                        const bigPlaceholder = document.createElement("div");
+                        bigPlaceholder.className = "preview-favicon-placeholder";
+                        bigPlaceholder.textContent = selectedTab.title ? selectedTab.title.trim().charAt(0) : "?";
+                        previewPanel.replaceChild(bigPlaceholder, bigImg);
+                    };
+                    previewPanel.appendChild(bigImg);
+                } else {
+                    const bigPlaceholder = document.createElement("div");
+                    bigPlaceholder.className = "preview-favicon-placeholder";
+                    bigPlaceholder.textContent = selectedTab.title ? selectedTab.title.trim().charAt(0) : "?";
+                    previewPanel.appendChild(bigPlaceholder);
+                }
+            }
+        }
+
+        // 3. Only auto-scroll when keyboard is driving — mouse hover should never
+        //    move the list, let the user scroll manually instead
+        const selectedRow = listPanel.querySelector(".tab-row.selected");
+        if (selectedRow && lastActiveDevice !== "mouse") {
+            suppressScrollHover(180);
+            selectedRow.scrollIntoView({ block: "nearest", behavior: "auto" });
+        }
     }
 
     // Dynamic rendering function to populate list
     function renderOverlay(tabs, selectedIndex, theme, layoutMode, zoomFactor, uiScale) {
         initOverlay();
-        
+
+        if (isActive) {
+            updateSelection(tabs, selectedIndex);
+
+            const container = shadow.querySelector(".overlay-container");
+            if (container) {
+                const factor = zoomFactor || 1.0;
+                const scaleValue = (uiScale || 1.0) / factor;
+                container.style.transform = `scale(${scaleValue})`;
+            }
+            return;
+        }
+
+        isActive = true;
+        // FIX 1: Sync on fresh open
+        currentSelectedIndex = selectedIndex;
+
         const backdrop = shadow.querySelector(".overlay-backdrop");
         if (theme === "light") {
             backdrop.classList.add("light-theme");
@@ -327,15 +425,25 @@ if (window === window.top) {
             backdrop.classList.remove("light-theme");
         }
 
+        if (!backdrop.hasWheelListener) {
+            backdrop.addEventListener("wheel", (e) => {
+                const path = e.composedPath();
+                const listPanel = path.find(el => el.classList && el.classList.contains("list-panel"));
+                if (!listPanel) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+            backdrop.hasWheelListener = true;
+        }
+
         const container = shadow.querySelector(".overlay-container");
-        container.innerHTML = ""; // Clear existing
+        container.innerHTML = "";
 
         const selectedTab = tabs[selectedIndex];
 
         if (layoutMode === "preview") {
             container.classList.add("preview-layout");
 
-            // Left Preview Panel
             const previewPanel = document.createElement("div");
             previewPanel.className = "preview-panel";
 
@@ -346,8 +454,9 @@ if (window === window.top) {
                     screenshotImg.src = selectedTab.screenshot;
                     previewPanel.appendChild(screenshotImg);
                 } else {
-                    // Fall back to showing the large centered favicon/placeholder
-                    const favUrl = selectedTab.url ? `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(selectedTab.url)}&size=64` : (selectedTab.favIconUrl || "");
+                    const favUrl = selectedTab.url
+                        ? `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(selectedTab.url)}&size=64`
+                        : (selectedTab.favIconUrl || "");
                     if (favUrl) {
                         const bigImg = document.createElement("img");
                         bigImg.className = "preview-favicon";
@@ -369,7 +478,6 @@ if (window === window.top) {
             }
             container.appendChild(previewPanel);
 
-            // Right List Panel
             const listPanel = document.createElement("div");
             listPanel.className = "list-panel";
             renderTabRows(listPanel, tabs, selectedIndex);
@@ -384,16 +492,11 @@ if (window === window.top) {
 
         const listPanelEl = container.querySelector(".list-panel");
         if (listPanelEl) {
-            listPanelEl.addEventListener("scroll", () => {
-                isScrolling = true;
-                if (scrollTimeout) clearTimeout(scrollTimeout);
-                scrollTimeout = setTimeout(() => {
-                    isScrolling = false;
-                }, 150);
-            }, { passive: true });
+            // FIX 2: User-initiated scroll (wheel/drag) also uses the suppressor
+            listPanelEl.addEventListener("scroll", () => suppressScrollHover(150), { passive: true });
+            listPanelEl.addEventListener("wheel", () => suppressScrollHover(150), { passive: true });
         }
 
-        // Apply scale transformation to perfectly counteract page zoom and apply user UI scaling
         const factor = zoomFactor || 1.0;
         const scaleValue = (uiScale || 1.0) / factor;
         container.style.transform = `scale(${scaleValue})`;
@@ -407,15 +510,15 @@ if (window === window.top) {
         tabs.forEach((tab, index) => {
             const row = document.createElement("div");
             row.className = `tab-row${index === selectedIndex ? " selected" : ""}`;
-            
-            // Add active-tab class if this is the browser's currently active tab
+
             if (tab.active) {
                 row.classList.add("active-tab");
             }
 
-            // High-reliability Favicon retrieval using Chrome MV3 Favicons API
-            const faviconUrl = tab.url ? `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(tab.url)}&size=32` : (tab.favIconUrl || "");
-            
+            const faviconUrl = tab.url
+                ? `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(tab.url)}&size=32`
+                : (tab.favIconUrl || "");
+
             if (faviconUrl) {
                 const img = document.createElement("img");
                 img.className = "favicon";
@@ -428,33 +531,44 @@ if (window === window.top) {
                 row.appendChild(createPlaceholder(tab.title));
             }
 
-            // Title
             const titleSpan = document.createElement("span");
             titleSpan.className = "tab-title";
             titleSpan.textContent = tab.title || "Untitled Tab";
             row.appendChild(titleSpan);
 
-            // Mouse fallbacks
             row.addEventListener("mousemove", (e) => {
                 if (isScrolling) return;
 
-                // Track actual screen movement to prevent false triggers during scrolling
-                if (e.clientX === lastMouseX && e.clientY === lastMouseY) {
+                // On overlay open we don't know where the cursor is yet.
+                // First mousemove just anchors the position so subsequent events
+                // have a real delta — prevents the overlay spawning under the cursor
+                // from instantly ghost-selecting whatever row is at center.
+                if (lastMouseX === null || lastMouseY === null) {
+                    lastMouseX = e.clientX;
+                    lastMouseY = e.clientY;
                     return;
                 }
+
+                const deltaX = Math.abs(e.clientX - lastMouseX);
+                const deltaY = Math.abs(e.clientY - lastMouseY);
+
+                // No actual movement — skip (handles duplicate/synthetic events)
+                if (deltaX === 0 && deltaY === 0) return;
+
                 lastMouseX = e.clientX;
                 lastMouseY = e.clientY;
 
-                // Ignore hover selection near the right edge (scrollbar area)
+                // Ignore hover near the scrollbar gutter
                 const rect = row.getBoundingClientRect();
-                if (e.clientX >= rect.right - 14) {
-                    return;
-                }
+                if (e.clientX >= rect.right - 14) return;
 
-                if (index !== selectedIndex) {
+                // Mark device as mouse so updateSelection knows not to auto-scroll
+                lastActiveDevice = "mouse";
+
+                if (index !== currentSelectedIndex) {
                     chrome.runtime.sendMessage({
                         type: "cyclr-change-selected",
-                        direction: index - selectedIndex
+                        direction: index - currentSelectedIndex
                     });
                 }
             });
@@ -467,10 +581,11 @@ if (window === window.top) {
             targetContainer.appendChild(row);
         });
 
-        // Scroll the selected row into view so navigation beyond 8 tabs is visible
+        // FIX 2: Suppress hover before the initial scrollIntoView on render
         setTimeout(() => {
             const selectedRow = targetContainer.querySelector(".tab-row.selected");
             if (selectedRow) {
+                suppressScrollHover(180);
                 selectedRow.scrollIntoView({ block: "nearest", behavior: "auto" });
             }
         }, 0);
@@ -479,24 +594,23 @@ if (window === window.top) {
     // Helper to check if a keyboard event matches the configured custom shortcut
     function matchesCustomShortcut(e) {
         if (!customShortcut) return false;
-        
-        // Match key (case-insensitive for reliability)
-        const matchesKey = e.key.toLowerCase() === customShortcut.key.toLowerCase() || 
+
+        const matchesKey = e.key.toLowerCase() === customShortcut.key.toLowerCase() ||
                            e.code.toLowerCase() === ("key" + customShortcut.key).toLowerCase() ||
                            e.code.toLowerCase() === customShortcut.key.toLowerCase();
-                           
-        // Match modifiers exactly
+
         const matchesModifiers = e.altKey === !!customShortcut.altKey &&
                                  e.ctrlKey === !!customShortcut.ctrlKey &&
                                  e.shiftKey === !!customShortcut.shiftKey &&
                                  e.metaKey === !!customShortcut.metaKey;
-                                 
+
         return matchesKey && matchesModifiers;
     }
 
     // Capture phase keyboard hooks
     window.addEventListener("keydown", (e) => {
-        // 1. Overlay is INACTIVE: Listen for custom shortcut trigger to open overlay
+        lastActiveDevice = "keyboard";
+
         if (!isActive) {
             if (matchesCustomShortcut(e)) {
                 e.preventDefault();
@@ -506,7 +620,6 @@ if (window === window.top) {
             return;
         }
 
-        // 2. Overlay is ACTIVE: Block all host page keyboard shortcut interruptions
         if (e.key === "ArrowDown" || (e.key === "Tab" && !e.shiftKey)) {
             e.preventDefault();
             e.stopPropagation();
@@ -524,14 +637,12 @@ if (window === window.top) {
             e.stopPropagation();
             chrome.runtime.sendMessage({ type: "cyclr-commit" });
         } else if (e.key === "q" && e.altKey) {
-            // Only allow default Alt+Q cycling if no custom shortcut is active to prevent cross-conflicts
             if (!customShortcut) {
                 e.preventDefault();
                 e.stopPropagation();
                 chrome.runtime.sendMessage({ type: "cyclr-change-selected", direction: 1 });
             }
         } else if (matchesCustomShortcut(e)) {
-            // Also support custom shortcut trigger to cycle down the list!
             e.preventDefault();
             e.stopPropagation();
             chrome.runtime.sendMessage({ type: "cyclr-change-selected", direction: 1 });
@@ -541,7 +652,6 @@ if (window === window.top) {
     window.addEventListener("keyup", (e) => {
         if (!isActive) return;
 
-        // Determine if primary modifier of key trigger is released to commit
         let shouldCommit = false;
         if (customShortcut) {
             if (customShortcut.altKey && (e.key === "Alt" || e.code === "AltLeft" || e.code === "AltRight")) {
@@ -554,7 +664,6 @@ if (window === window.top) {
                 shouldCommit = true;
             }
         } else {
-            // Default Alt+Q commit condition
             if (e.key === "Alt" || e.code === "AltLeft" || e.code === "AltRight" || (e.key !== "q" && !e.altKey)) {
                 shouldCommit = true;
             }
@@ -573,11 +682,14 @@ if (window === window.top) {
             sendResponse({ active: true });
             return true;
         } else if (msg.type === "cyclr-render") {
-            isActive = true;
             renderOverlay(msg.tabs, msg.selectedIndex, msg.theme, msg.layoutMode, msg.zoomFactor, msg.uiScale);
         } else if (msg.type === "cyclr-close") {
             isActive = false;
             isScrolling = false;
+            lastActiveDevice = "keyboard";
+            lastMouseX = null;
+            lastMouseY = null;
+            currentSelectedIndex = 0;
             if (overlayRoot) {
                 overlayRoot.style.display = "none";
             }

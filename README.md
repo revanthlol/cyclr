@@ -19,11 +19,13 @@ A lightweight, keyboard-driven tab switcher for Chromium browsers, inspired by O
 
 ## Installation
 
-1. Clone or download this repository.
-2. Open Chrome/Chromium and navigate to `chrome://extensions/`.
+As of now the extension isnt uploaded on the [Chrome Web Store](https://chrome.google.com/webstore/category/extensions). So here's how to install it manually:
+
+1. Clone or download this [repository](https://github.com/revanthlol/cyclr) or just download the zip file from the [releases page](https://github.com/revanthlol/cyclr/releases) for the stable release (not dev).
+2. Open Chrome/Chromium and navigate to [chrome://extensions](https://chrome://extensions).
 3. Enable **Developer mode** in the top-right corner.
 4. Click **Load unpacked** and select the repository folder.
-5. Set up your preferences on the onboarding page that automatically opens.
+5. Set up your preferences on [this page](https://chrome://extensions/?id=fmbcndbkjmccknhnbajddjkkamfchjnh)
 
 ## License
 
