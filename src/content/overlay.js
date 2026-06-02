@@ -14,6 +14,12 @@ if (window === window.top) {
     // instead of the stale captured parameter from renderTabRows()
     let currentSelectedIndex = 0;
 
+    // Focus tracking: save what was focused before overlay opens, restore on close.
+    // This is the fix for PDF/OOPIF pages — stealing focus to the backdrop ensures
+    // keyup events (Alt release to commit) are delivered to this frame's window
+    // listener instead of being swallowed by the out-of-process PDF viewer iframe.
+    let previousFocus = null;
+
     // Helper to log only when devMode is active
     function log(...args) {
         if (devMode) console.log(...args);
@@ -503,6 +509,14 @@ if (window === window.top) {
         container.style.transformOrigin = "center center";
 
         overlayRoot.style.display = "block";
+
+        // Steal keyboard focus to the backdrop so keyup events (e.g. Alt release)
+        // are guaranteed to reach this frame's window listener. Without this, on
+        // PDF pages the Chrome PDF viewer OOPIF retains focus and swallows keyup.
+        previousFocus = document.activeElement;
+        backdrop.setAttribute("tabindex", "-1");
+        backdrop.style.outline = "none";
+        backdrop.focus({ preventScroll: true });
     }
 
     // Dynamic row rendering helper
@@ -725,6 +739,11 @@ if (window === window.top) {
             if (overlayRoot) {
                 overlayRoot.style.display = "none";
             }
+            // Restore focus to wherever it was before overlay opened
+            if (previousFocus && typeof previousFocus.focus === "function") {
+                previousFocus.focus({ preventScroll: true });
+            }
+            previousFocus = null;
         }
     });
 }
