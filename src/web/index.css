@@ -487,4 +487,19 @@ kbd {
     display: inline-block;
 }
 
+/* Sub-steps in manual installation list */
+.sub-step-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+    margin-bottom: 6px;
+    padding-left: 14px;
+    border-left: 2px solid #222225;
+}
 
+.sub-step {
+    font-size: 13.5px;
+    color: #8e8e93;
+    line-height: 1.5;
+}
