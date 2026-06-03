@@ -4,6 +4,15 @@
   "version": "1.1.4",
   "description": "A lightweight, keyboard-driven tab switcher for Chromium browsers, inspired by OS-level Alt-Tab menus.",
 
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "cyclr@revanthlol.com",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  },
+
   "permissions": [
     "tabs",
     "scripting",
@@ -61,8 +70,7 @@
       "suggested_key": {
         "default": "Alt+Q"
       },
-      "description":
-        "Open Cyclr"
+      "description": "Open Cyclr"
     }
   }
 }

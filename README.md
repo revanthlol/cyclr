@@ -1,6 +1,6 @@
 # Cyclr
 
-A lightweight, keyboard-driven tab switcher for Chromium browsers, inspired by OS-level Alt-Tab menus.
+A lightweight, keyboard-driven tab switcher for Chromium and Firefox browsers, inspired by OS-level Alt-Tab menus.
 
 ## Screenshots
 
@@ -29,19 +29,27 @@ A lightweight, keyboard-driven tab switcher for Chromium browsers, inspired by O
 
 ## Installation
 
-The extension isn't on the [Chrome Web Store](https://chrome.google.com/webstore/category/extensions) yet. Install it manually:
+Install Cyclr manually:
 
+### Chrome / Chromium-based Browsers
 1. Download the latest [`cyclr.zip`](https://github.com/revanthlol/cyclr/releases/latest/download/cyclr.zip) from the [releases page](https://github.com/revanthlol/cyclr/releases), or clone this [repository](https://github.com/revanthlol/cyclr).
 2. Open Chrome/Chromium and go to `chrome://extensions`.
 3. Enable **Developer mode** (top-right toggle).
 4. Click **Load unpacked** and select the unzipped folder (or the repo root).
 5. Done — configure preferences via the extension's options page.
 
+### Firefox
+1. Download and extract the latest [`cyclr.zip`](https://github.com/revanthlol/cyclr/releases/latest/download/cyclr.zip).
+2. Open Firefox and navigate to `about:debugging`.
+3. Click **This Firefox** in the left sidebar.
+4. Click the **Load Temporary Add-on...** button.
+5. Select the `manifest.json` file inside your unzipped Cyclr folder.
+
 > See the **[Homepage](https://cyclr-five.vercel.app/index.html)** for further details.
 
 ## Known Limitations
 
-- **Restricted pages**: Cyclr cannot run on Chrome's internal or privileged pages (`chrome://*`, New Tab, Web Store, DevTools, other extension pages, or `chrome-extension://*`) due to browser security restrictions. `file://` support requires manual permission, while contexts like the PDF viewer or `data:` URLs may work with limitations due to iframe isolation.
+- **Restricted pages**: Cyclr cannot run on internal or privileged browser pages (e.g. `chrome://*`, `about:*`, browser web stores like Chrome Web Store or AMO, support pages, DevTools, or extension-specific pages) due to browser-level security restrictions. On these pages, Cyclr automatically falls back to cycling through your tabs directly.
 
 - **Iframes**: The overlay is intentionally suppressed inside iframes to prevent duplicate instances. If a page is loaded entirely inside a frame (some embedded dashboards, web apps), the overlay may not trigger.
 
