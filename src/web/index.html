@@ -29,11 +29,18 @@
     <!-- Main Content -->
     <main class="main-content">
       <section class="intro">
-        <h1 class="title">A keyboard-driven tab switcher for Chromium &amp; Firefox.</h1>
-        <p class="subtitle">Alt+Tab style cycling with zero lag, clean layouts, and optional widescreen visual previews. Configured to align perfectly with your browser zoom.</p>
+        <h1 class="title">A keyboard-driven tab switcher extension.</h1>
+        <p class="subtitle" style="font-size: 17px; margin-top: -6px; max-width: 520px;">
+          Both Firefox & Chromium users can download the latest release and load it as an unpacked extension or an temporary extension according to their browser ( recommended for now ).
+        </p>
         <div class="intro-actions">
-          <a href="https://github.com/revanthlol/cyclr/releases/latest/download/cyclr.zip" id="downloadBtn" class="btn-primary">Download Extension (.zip) &rarr;</a>
+          <a href="https://github.com/revanthlol/cyclr/releases/latest/download/cyclr-chrome.zip" id="downloadChromeBtn" class="btn-primary">Download for Chromium</a>
+          <a href="https://github.com/revanthlol/cyclr/releases/latest/download/cyclr-firefox.zip" id="downloadFirefoxBtn" class="btn-secondary">Download for Firefox</a>
+          
+          <a href="https://github.com/revanthlol/cyclr" target="_blank" class="btn-secondary">Source Code</a>
         </div>
+        <p class="version-display">Latest Version: <span id="versionBadge" class="version-number">Loading...</span></p>
+
       </section>
 
       <!-- Pure CSS Mockup of the Extension Switcher -->
@@ -122,22 +129,17 @@
 
     <!-- Secondary Links Section -->
     <div class="secondary-links">
+      <span class="secondary-link">
+        Chrome Web Store <span class="badge-status">Coming Soon</span>
+      </span>
+      <span class="divider">&bull;</span>
+      <a href="https://addons.mozilla.org/en-US/firefox/addon/cyclr/" target="_blank" class="secondary-link">
+        Firefox Add-ons <span class="badge-status">Awaiting Review</span>
+      </a>
+      <span class="divider">&bull;</span>
       <a href="https://github.com/revanthlol/cyclr" target="_blank" class="secondary-link">GitHub</a>
       <span class="divider">&bull;</span>
       <a href="install.html" class="secondary-link">Manual Install Guide</a>
-    </div>
-  </div>
-
-  <!-- Download Confirmation Modal -->
-  <div id="downloadModal" class="modal-overlay">
-    <div class="modal-box">
-      <h3>Download Cyclr</h3>
-      <p class="modal-text">You are downloading the latest extension package (.zip).</p>
-      <p class="modal-text">Once confirmed, the download will begin and you will be redirected to the manual installation guide.</p>
-      <div class="modal-actions">
-        <button id="modalCancelBtn" class="btn-secondary">Cancel</button>
-        <button id="modalConfirmBtn" class="btn-primary">Confirm &amp; Download</button>
-      </div>
     </div>
   </div>
 
