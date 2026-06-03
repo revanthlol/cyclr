@@ -36,18 +36,28 @@ jobs:
       - name: Build Firefox Extension
         run: |
           mkdir -p dist/firefox
-          # Copy source files to a temp directory
-          cp -r src assets _favicon manifest.json dist/firefox/
+
+          cp -r src assets manifest.json dist/firefox/
+
           cd dist/firefox
-          
-          # Mutate manifest.json for Firefox compliance
-          jq '.background = {"scripts": ["src/background/background.js"]} | .browser_specific_settings = {"gecko": {"id": "cyclr@revanthlol.com", "data_collection_permissions": {"required": ["none"]}}} | del(.permissions[] | select(. == "favicon"))' manifest.json > manifest-ff.json
-          mv manifest-ff.json manifest.json
-          
-          # Zip the Firefox build
-          zip -r cyclr-firefox.zip .
-          mv cyclr-firefox.zip ../
-          cd ../..
+
+          jq '
+            .background = {
+              "scripts": ["src/background/background.js"]
+            }
+            |
+            .browser_specific_settings = {
+              "gecko": {
+                "id": "cyclr@revanthlol.com"
+              }
+            }
+            |
+            .permissions |= map(select(. != "favicon"))
+          ' manifest.json > manifest-firefox.json
+
+          mv manifest-firefox.json manifest.json
+
+          zip -r ../cyclr-firefox.zip .
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

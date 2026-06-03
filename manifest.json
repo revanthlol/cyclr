@@ -58,13 +58,6 @@
     }
   ],
 
-  "web_accessible_resources": [
-    {
-      "resources": ["_favicon/*"],
-      "matches": ["<all_urls>"]
-    }
-  ],
-
   "commands": {
     "open-cyclr": {
       "suggested_key": {
