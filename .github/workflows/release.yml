@@ -9,36 +9,59 @@ permissions:
   contents: write
 
 jobs:
-  release:
+  build-and-release:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup Node.js (for Mozilla web-ext)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
       - name: Update manifest version
         run: |
           VERSION=${GITHUB_REF_NAME#v}
+          sed -i "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" manifest.json
 
-          sed -i \
-            "s/\"version\": \".*\"/\"version\": \"$VERSION\"/" \
-            manifest.json
-
-      - name: Create release archive
+      - name: Build Chromium Extension
         run: |
-          zip -r cyclr.zip . \
-            -x ".git/*" \
-            -x ".github/*" \
-            -x "src/web/*" \
-            -x "docs/*" \
-            -x "README.md" \
-            -x "LICENSE" \
-            -x "node_modules/*" \
-            -x "*.log" \
-            -x ".DS_Store"
+          mkdir -p dist/chrome
+          zip -r dist/chrome/cyclr-chrome.zip . \
+            -x ".git/*" -x ".github/*" -x "src/web/*" -x "docs/*" \
+            -x "README.md" -x "LICENSE" -x "dist/*"
+
+      - name: Build Firefox Extension
+        run: |
+          mkdir -p dist/firefox
+          # Copy source files to a temp directory
+          cp -r src assets _favicon manifest.json dist/firefox/
+          cd dist/firefox
+          
+          # Mutate manifest.json for Firefox compliance
+          jq '.background = {"scripts": ["src/background/background.js"]} | .browser_specific_settings = {"gecko": {"id": "cyclr@revanthlol.com", "data_collection_permissions": {"required": ["none"]}}} | del(.permissions[] | select(. == "favicon"))' manifest.json > manifest-ff.json
+          mv manifest-ff.json manifest.json
+          
+          # Zip the Firefox build
+          zip -r cyclr-firefox.zip .
+          mv cyclr-firefox.zip ../
+          cd ../..
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
-          files: cyclr.zip
+          files: |
+            dist/chrome/cyclr-chrome.zip
+            dist/cyclr-firefox.zip
+
+      - name: Submit to Mozilla Add-ons (AMO)
+        env:
+          WEB_EXT_API_KEY: ${{ secrets.WEB_EXT_API_KEY }}
+          WEB_EXT_API_SECRET: ${{ secrets.WEB_EXT_API_SECRET }}
+        run: |
+          npm install -g web-ext
+          # The --channel listed flag submits it to the public store for review
+          web-ext sign --source-dir dist/firefox --api-key $WEB_EXT_API_KEY --api-secret $WEB_EXT_API_SECRET --channel listed
