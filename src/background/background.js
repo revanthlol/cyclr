@@ -1,3 +1,4 @@
+const IS_FIREFOX = navigator.userAgent.includes("Firefox");
 let devMode = false;
 
 // Custom logging wrappers to respect the Developer Logs setting
@@ -126,7 +127,8 @@ function isInjectable(url) {
         "chrome-extension:",
         "chrome-search:",
         "edge:",
-        "about:"
+        "about:",
+        "moz-extension:" // Added for Firefox
     ];
 
     try {
@@ -136,12 +138,12 @@ function isInjectable(url) {
         }
 
         // Block protected Chrome Web Store sites
-        if (parsed.hostname === "chrome.google.com" && parsed.pathname.startsWith("/webstore")) {
-            return false;
-        }
-        if (parsed.hostname === "chromewebstore.google.com") {
-            return false;
-        }
+        if (parsed.hostname === "chrome.google.com" && parsed.pathname.startsWith("/webstore")) return false;
+        if (parsed.hostname === "chromewebstore.google.com") return false;
+        
+        // Block protected Mozilla Add-ons site
+        if (IS_FIREFOX && parsed.hostname === "addons.mozilla.org") return false;
+        
     } catch (e) {
         return false;
     }

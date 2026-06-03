@@ -1,5 +1,6 @@
 // Only run the overlay in the top-level frame to prevent duplicate widgets in iframes
 if (window === window.top) {
+    const IS_FIREFOX = navigator.userAgent.includes("Firefox");
     let overlayRoot = null;
     let shadow = null;
     let isActive = false;
@@ -398,7 +399,7 @@ if (window === window.top) {
                 screenshotImg.src = selectedTab.screenshot;
                 previewPanel.appendChild(screenshotImg);
             } else {
-                const favUrl = selectedTab.url
+                const favUrl = (!IS_FIREFOX && selectedTab.url)
                     ? `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(selectedTab.url)}&size=64`
                     : (selectedTab.favIconUrl || "");
                 if (favUrl) {
@@ -500,7 +501,7 @@ if (window === window.top) {
                     screenshotImg.src = selectedTab.screenshot;
                     previewPanel.appendChild(screenshotImg);
                 } else {
-                    const favUrl = selectedTab.url
+                    const favUrl = (!IS_FIREFOX && selectedTab.url)
                         ? `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(selectedTab.url)}&size=64`
                         : (selectedTab.favIconUrl || "");
                     if (favUrl) {
@@ -572,7 +573,7 @@ if (window === window.top) {
                 row.classList.add("active-tab");
             }
 
-            const faviconUrl = tab.url
+            const faviconUrl = (!IS_FIREFOX && tab.url)
                 ? `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(tab.url)}&size=32`
                 : (tab.favIconUrl || "");
 
