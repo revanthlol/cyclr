@@ -46,10 +46,17 @@
       <!-- Pure CSS Mockup of the Extension Switcher -->
       <section class="mockup-section">
         <div class="mockup-browser">
-          <div class="mockup-dots">
-            <span class="dot red"></span>
-            <span class="dot yellow"></span>
-            <span class="dot green"></span>
+          <div class="mockup-header">
+            <div class="mockup-dots">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+            </div>
+            <div class="mockup-mode-toggle">
+              <button id="toggleWidescreen" class="toggle-btn active">Tabs Preview</button>
+              <button id="toggleList" class="toggle-btn">List</button>
+              <button class="toggle-btn disabled-btn" title="Grid mode coming soon!" disabled>Grid <span class="badge-soon">Soon</span></button>
+            </div>
           </div>
           <div class="mockup-overlay-container">
             <div class="mockup-preview-panel">
@@ -72,11 +79,27 @@
                 <img src="https://www.google.com/s2/favicons?domain=google.com&sz=32" class="mockup-favicon" alt="Google">
                 <span class="mockup-tab-title">Google Search — tab switcher for chrome</span>
               </div>
+              <div class="mockup-tab-row" data-preview="previews/preview-youtube.jpeg">
+                <img src="https://www.google.com/s2/favicons?domain=youtube.com&sz=32" class="mockup-favicon" alt="YouTube">
+                <span class="mockup-tab-title">YouTube</span>
+              </div>
+              <div class="mockup-tab-row" data-preview="previews/preview-gmail.jpeg">
+                <img src="https://www.google.com/s2/favicons?domain=mail.google.com&sz=32" class="mockup-favicon" alt="Gmail">
+                <span class="mockup-tab-title">Inbox(42309) — Gmail</span>
+              </div>
+              <div class="mockup-tab-row" data-preview="previews/preview-x.jpeg">
+                <img src="https://www.google.com/s2/favicons?domain=x.com&sz=32" class="mockup-favicon" alt="X">
+                <span class="mockup-tab-title">Home / X</span>
+              </div>
+              <div class="mockup-tab-row" data-preview="previews/preview-reddit.jpeg">
+                <img src="https://www.google.com/s2/favicons?domain=reddit.com&sz=32" class="mockup-favicon" alt="Reddit">
+                <span class="mockup-tab-title">Reddit - The heart of the internet</span>
+              </div>
             </div>
           </div>
         </div>
       </section>
-
+        
       <!-- How it Works & Shortcuts -->
       <section class="details-section">
         <div class="details-grid">
@@ -98,6 +121,10 @@
               <li>
                 <span class="list-bullet">4.</span>
                 <span class="list-text">Release <kbd>Alt</kbd> to instantly switch to the selected tab.</span>
+              </li>
+              <li>
+                <span class="list-bullet">5.</span>
+                <span class="list-text">Press <kbd>Esc</kbd> to close / cancel the action.</span>
               </li>
             </ul>
           </div>
@@ -124,7 +151,7 @@
           </div>
         </div>
       </section>
-
+      <span style="opacity: 0.6;font-size: 16px; align-self: center; display: flex;">Note :- Extensions will be uploaded on there respective stores soon (Just a matter of time!) </span>
     </main>
 
     <!-- Secondary Links Section -->

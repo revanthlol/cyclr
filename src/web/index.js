@@ -125,5 +125,24 @@ document.addEventListener("DOMContentLoaded", () => {
             window.location.href = `install.html?download=${encodeURIComponent(downloadFirefoxBtn.href)}`;
         });
     }
+
+    // Widescreen & List Mode Mockup Toggle
+    const toggleWidescreen = document.getElementById("toggleWidescreen");
+    const toggleList = document.getElementById("toggleList");
+    const mockupOverlay = document.querySelector(".mockup-overlay-container");
+
+    if (toggleWidescreen && toggleList && mockupOverlay) {
+        toggleWidescreen.addEventListener("click", () => {
+            toggleWidescreen.classList.add("active");
+            toggleList.classList.remove("active");
+            mockupOverlay.classList.remove("list-mode");
+        });
+
+        toggleList.addEventListener("click", () => {
+            toggleList.classList.add("active");
+            toggleWidescreen.classList.remove("active");
+            mockupOverlay.classList.add("list-mode");
+        });
+    }
 });
 

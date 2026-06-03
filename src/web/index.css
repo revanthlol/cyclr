@@ -160,8 +160,8 @@ a.brand:hover .brand-name {
 
 .mockup-browser {
     width: 100%;
-    max-width: 720px;
-    min-width: 580px; /* Prevent layout squishing on mobile */
+    max-width: 860px;
+    min-width: 680px; /* Prevent layout squishing on mobile */
     background-color: #121214;
     border: 1px solid #252526;
     border-radius: 8px;
@@ -172,6 +172,13 @@ a.brand:hover .brand-name {
     gap: 16px;
     position: relative;
     flex-shrink: 0;
+}
+
+.mockup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
 }
 
 .mockup-dots {
@@ -190,10 +197,62 @@ a.brand:hover .brand-name {
 .mockup-dots .dot.yellow { background-color: #ffbd2e; }
 .mockup-dots .dot.green { background-color: #27c93f; }
 
+.mockup-mode-toggle {
+    display: flex;
+    background-color: #1a1a1c;
+    border: 1px solid #2d2d30;
+    border-radius: 6px;
+    padding: 2px;
+}
+
+.toggle-btn {
+    background: transparent;
+    border: none;
+    color: #8e8e93;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s ease;
+}
+
+.toggle-btn:hover {
+    color: #ffffff;
+}
+
+.toggle-btn.active {
+    background-color: #2e2e34;
+    color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.toggle-btn.disabled-btn {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.toggle-btn.disabled-btn:hover {
+    color: #8e8e93;
+}
+
+.badge-soon {
+    font-size: 8px;
+    vertical-align: middle;
+    background-color: #5c7cfa;
+    color: #ffffff;
+    padding: 1px 4px;
+    border-radius: 4px;
+    margin-left: 3px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
 /* CSS simulated overlay tab switcher */
 .mockup-overlay-container {
     width: 100%;
-    max-width: 600px;
+    max-width: 780px;
     align-self: center;
     background: #252526;
     border: 1px solid #3c3c3c;
@@ -205,11 +264,20 @@ a.brand:hover .brand-name {
     align-items: center;
     box-shadow: 0 16px 32px rgba(0, 0, 0, 0.5);
     margin: 20px 0;
+    transition: max-width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mockup-overlay-container.list-mode {
+    max-width: 360px;
+}
+
+.mockup-overlay-container.list-mode .mockup-preview-panel {
+    display: none;
 }
 
 .mockup-preview-panel {
-    width: 220px;
-    height: 138px;
+    width: 420px;
+    height: 270px;
     border-radius: 6px;
     background: #101011;
     border: 1px solid #3c3c3c;
