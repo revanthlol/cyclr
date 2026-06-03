@@ -118,37 +118,26 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     }
 });
 
-// Pre-check function to verify if a tab's URL is injectable
+// Pre-check function to verify if a tab's URL is a core browser page
 function isInjectable(url) {
     if (!url) return false;
 
+    // We only block core browser schemas to prevent ugly console errors
     const restrictedProtocols = [
         "chrome:",
         "chrome-extension:",
         "chrome-search:",
         "edge:",
         "about:",
-        "moz-extension:" // Added for Firefox
+        "moz-extension:"
     ];
 
     try {
         const parsed = new URL(url);
-        if (restrictedProtocols.includes(parsed.protocol)) {
-            return false;
-        }
-
-        // Block protected Chrome Web Store sites
-        if (parsed.hostname === "chrome.google.com" && parsed.pathname.startsWith("/webstore")) return false;
-        if (parsed.hostname === "chromewebstore.google.com") return false;
-        
-        // Block protected Mozilla Add-ons site
-        if (IS_FIREFOX && parsed.hostname === "addons.mozilla.org") return false;
-        
+        return !restrictedProtocols.includes(parsed.protocol);
     } catch (e) {
         return false;
     }
-
-    return true;
 }
 
 // Helper to verify if content script is active on a tab, programmatically inject if missing
@@ -166,7 +155,8 @@ async function ensureContentScriptActive(tabId) {
             await new Promise(resolve => setTimeout(resolve, 60));
             return true;
         } catch (injectError) {
-            warn("[CYCLR] Programmatic injection failed:", injectError.message);
+            // Browser blocked the injection (e.g., protected domain like support.mozilla.org)
+            warn("[CYCLR] Programmatic injection failed/blocked:", injectError.message);
             return false;
         }
     }
@@ -214,18 +204,18 @@ async function broadcastRender() {
             tabs: state.tabs.map(t => ({
                 id: t.id,
                 title: t.title,
-                url: t.url, // Pass URL so content script can generate reliable favicon
+                url: t.url, 
                 favIconUrl: t.favIconUrl,
-                active: t.active, // browser's currently active tab
-                screenshot: tabScreenshots[t.id] || null // Include tab's cached screenshot preview!
+                active: t.active, 
+                screenshot: tabScreenshots[t.id] || null 
             })),
             selectedIndex: state.selectedIndex,
-            theme: settings.theme, // Pass theme mode ("dark" or "light")
-            layoutMode: settings.layoutMode, // Pass layoutMode ("list" or "preview")
-            zoomFactor: zoomFactor, // Pass tab's webpage zoom level to counteract it
-            uiScale: parseFloat(settings.uiScale || "1.0"), // Pass visual UI scaling factor
-            enableAnimations: !!settings.enableAnimations, // Pass animations toggle!
-            enableBlur: !!settings.enableBlur // Pass blur toggle!
+            theme: settings.theme, 
+            layoutMode: settings.layoutMode, 
+            zoomFactor: zoomFactor, 
+            uiScale: parseFloat(settings.uiScale || "1.0"), 
+            enableAnimations: !!settings.enableAnimations, 
+            enableBlur: !!settings.enableBlur 
         });
     } catch (err) {
         warn("[CYCLR] Broadcast render failed:", err);
@@ -250,9 +240,17 @@ async function triggerOpen() {
             // Silently ignore restricted context captures
         }
 
-        // 1. Clean Pre-Check: If restricted page, switch immediately and skip injection / overlay state
-        if (!isInjectable(activeTab.url)) {
-            log("[CYCLR] Restricted page detected via pre-check. Direct switch fallback.");
+        // 1. Trial and Error Injection
+        const canInjectProtocol = isInjectable(activeTab.url);
+        let scriptActive = false;
+
+        if (canInjectProtocol) {
+            scriptActive = await ensureContentScriptActive(activeTab.id);
+        }
+
+        // 2. Unified Fallback (Triggers if protocol is blocked OR injection fails)
+        if (!canInjectProtocol || !scriptActive) {
+            log("[CYCLR] Restricted context detected. Executing direct switch fallback.");
             let tabs = await chrome.tabs.query({ currentWindow: true });
             
             if (settings.orderMode === "mru") {
@@ -287,13 +285,7 @@ async function triggerOpen() {
             return;
         }
 
-        // 2. Injectable Flow: Verify content script is listening
-        const scriptActive = await ensureContentScriptActive(activeTab.id);
-        if (!scriptActive) {
-            warn("[CYCLR] Content script not active on this page. Aborting.");
-            return;
-        }
-
+        // 3. Injectable Flow: Script is active, proceed to render overlay
         let tabs = await chrome.tabs.query({ currentWindow: true });
 
         if (settings.orderMode === "mru") {
