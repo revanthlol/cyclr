@@ -156,6 +156,35 @@ chrome.tabs.onRemoved.addListener((tabId) => {
     removeFromTabHistory(tabId);
     delete tabScreenshots[tabId]; // Evict screenshot from memory cache
     delete tabFavicons[tabId]; // Evict preloaded favicon
+
+    if (state.active) {
+        // If the closed tab is the source tab (where the overlay is rendered), we must close the overlay
+        if (tabId === state.sourceTabId) {
+            state.active = false;
+            state.tabs = [];
+            state.selectedIndex = 0;
+            state.sourceTabId = null;
+            log("[CYCLR] Source tab closed. Resetting switcher state.");
+            return;
+        }
+
+        // Remove the closed tab from the active switcher list
+        const oldLength = state.tabs.length;
+        state.tabs = state.tabs.filter(t => t.id !== tabId);
+
+        if (state.tabs.length !== oldLength) {
+            if (state.selectedIndex >= state.tabs.length) {
+                state.selectedIndex = Math.max(0, state.tabs.length - 1);
+            }
+
+            if (state.tabs.length === 0) {
+                state.active = false;
+                state.sourceTabId = null;
+            } else {
+                broadcastRender();
+            }
+        }
+    }
 });
 
 // Capture page screenshot when a tab finishes loading
@@ -245,7 +274,12 @@ async function getTabZoom(tabId) {
     return new Promise((resolve) => {
         try {
             chrome.tabs.getZoom(tabId, (zoom) => {
-                resolve(zoom || 1.0);
+                if (chrome.runtime.lastError) {
+                    warn("[CYCLR] getTabZoom error:", chrome.runtime.lastError.message);
+                    resolve(1.0);
+                } else {
+                    resolve(zoom || 1.0);
+                }
             });
         } catch (e) {
             resolve(1.0);
@@ -343,9 +377,13 @@ async function triggerOpen() {
 
             const targetTab = tabs[prevActiveIndex];
             if (targetTab && targetTab.id !== activeTab.id) {
-                await chrome.tabs.update(targetTab.id, { active: true });
-                updateTabHistory(targetTab.id);
-                log("[CYCLR] Switched from restricted page to standard tab:", targetTab.id);
+                try {
+                    await chrome.tabs.update(targetTab.id, { active: true });
+                    updateTabHistory(targetTab.id);
+                    log("[CYCLR] Switched from restricted page to standard tab:", targetTab.id);
+                } catch (e) {
+                    error("[CYCLR] Fallback switch failed:", e);
+                }
             }
             return;
         }
@@ -440,8 +478,12 @@ chrome.runtime.onMessage.addListener(async (msg) => {
 
         const targetTab = state.tabs[state.selectedIndex];
         if (targetTab && targetTab.id !== state.sourceTabId) {
-            await chrome.tabs.update(targetTab.id, { active: true });
-            updateTabHistory(targetTab.id);
+            try {
+                await chrome.tabs.update(targetTab.id, { active: true });
+                updateTabHistory(targetTab.id);
+            } catch (e) {
+                error("[CYCLR] Failed to update tab active state:", e);
+            }
         }
 
         state.active = false;
@@ -474,20 +516,6 @@ chrome.runtime.onMessage.addListener(async (msg) => {
         const tabId = msg.tabId;
         try {
             await chrome.tabs.remove(tabId);
-            state.tabs = state.tabs.filter(t => t.id !== tabId);
-            if (state.selectedIndex >= state.tabs.length) {
-                state.selectedIndex = Math.max(0, state.tabs.length - 1);
-            }
-            if (state.tabs.length === 0) {
-                state.active = false;
-                if (state.sourceTabId) {
-                    try {
-                        await chrome.tabs.sendMessage(state.sourceTabId, { type: "cyclr-close" });
-                    } catch (e) {}
-                }
-            } else {
-                await broadcastRender();
-            }
         } catch (e) {
             error("[CYCLR] Failed to close tab:", e);
         }
