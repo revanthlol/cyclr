@@ -15,7 +15,9 @@ A lightweight, keyboard-driven tab switcher for Chromium and Firefox browsers, i
 ## Features
 
 - **Keyboard-First Navigation**: Cycle tabs using `Alt + Q` (or custom combinations) without touching the mouse.
-- **Widescreen Previews**: Instantly view live visual previews of tabs as you cycle (can be turned off for an ultra-compact list).
+- **Widescreen Previews (Default)**: Instantly view live visual previews of tabs as you cycle (can be switched to a list or grid layout).
+- **High-Quality Favicon Previews & Preloading**: Chrome tab previews show sharp, high-fidelity favicons before a screenshot is cached, preloaded in the background for zero-delay rendering.
+- **Close Tabs Directly**: Red close tab buttons allow closing tabs directly from the preview list or grid card interface without leaving the switcher.
 - **Scale Stabilization**: Built-in counter-zoom scaling that keeps the UI perfect at all webpage zoom levels.
 - **Fully Customizable**: Modify hotkeys, ordering modes (MRU or Tab Strip), themes, scaling, and developer settings on-the-fly.
 
@@ -54,7 +56,6 @@ Install Cyclr manually:
 
 - **Iframes**: The overlay is intentionally suppressed inside iframes to prevent duplicate instances. If a page is loaded entirely inside a frame (some embedded dashboards, web apps), the overlay may not trigger.
 
-- **Custom shortcut recording is experimental**: The shortcut recorder works reliably for standard letter/number combos with `Alt` or `Ctrl` modifiers, but has known issues with symbol keys (`` ` ``, `-`, `=`, etc.) on Linux due to how Xorg/Wayland handles modifier+key combinations in browsers — `e.key` can return `"Dead"` or `"Unidentified"` instead of the actual character. **Stick with the default `Alt + Q`** unless you're comfortable debugging storage values manually. A proper fix is planned.
 
 - **MRU ordering depends on focus events**: The Most Recently Used tab order is tracked via Chrome's `tabs.onActivated` API. Tabs that were active before the extension was installed won't have accurate MRU history until they're visited at least once after install.
 
