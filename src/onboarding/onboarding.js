@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     const orderSelect = document.getElementById("orderMode");
     const themeSelect = document.getElementById("themeMode");
-    const layoutToggle = document.getElementById("layoutToggle");
+    const layoutModeSelect = document.getElementById("layoutMode");
     const devToggle = document.getElementById("devToggle");
     const animationsToggle = document.getElementById("animationsToggle");
     const blurToggle = document.getElementById("blurToggle");
@@ -23,14 +23,14 @@ document.addEventListener("DOMContentLoaded", () => {
         theme: "dark",
         layoutMode: "list",
         devMode: false,
-        uiScale: "1.0",
+        uiScale: "1.15",
         enableAnimations: true,
         enableBlur: false
     }, (items) => {
         devMode = !!items.devMode;
         orderSelect.value = items.orderMode;
         themeSelect.value = items.theme;
-        layoutToggle.checked = (items.layoutMode === "preview");
+        layoutModeSelect.value = items.layoutMode;
         devToggle.checked = devMode;
         uiScaleSelect.value = items.uiScale;
         animationsToggle.checked = !!items.enableAnimations;
@@ -54,9 +54,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Save layout mode when the toggle is flipped
-    layoutToggle.addEventListener("change", () => {
-        const mode = layoutToggle.checked ? "preview" : "list";
+    // Save layout mode when the selection is changed
+    layoutModeSelect.addEventListener("change", () => {
+        const mode = layoutModeSelect.value;
         chrome.storage.local.set({
             layoutMode: mode
         }, () => {

@@ -39,14 +39,15 @@
 
     <div class="setting-group">
       <div class="setting-label-block">
-        <span class="setting-label">Tab Preview</span>
-        <span class="setting-desc">Show a dynamic icon preview panel.</span>
+        <span class="setting-label">Layout Mode</span>
+        <span class="setting-desc">Choose the presentation layout of the switcher overlay.</span>
       </div>
       <div class="setting-control">
-        <label class="switch">
-          <input type="checkbox" id="layoutToggle">
-          <span class="slider"></span>
-        </label>
+        <select id="layoutMode">
+          <option value="list">List Layout (Default)</option>
+          <option value="preview">Preview Layout</option>
+          <option value="grid">Grid Layout</option>
+        </select>
       </div>
     </div>
 
@@ -96,9 +97,9 @@
       </div>
       <div class="setting-control">
         <select id="uiScale">
-          <option value="0.85">Small (85%)</option>
-          <option value="1.0">Medium (100%)</option>
-          <option value="1.15">Large (115%)</option>
+          <option value="1.0">Small (85%)</option>
+          <option value="1.15">Medium (100% - Default)</option>
+          <option value="1.3">Large (115%)</option>
         </select>
       </div>
     </div>

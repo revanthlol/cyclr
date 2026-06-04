@@ -59,9 +59,9 @@
                 <span class="sub-text">Adjust the visual scale of the overlay.</span>
               </div>
               <select id="uiScale">
-                <option value="0.85">Small (85%)</option>
-                <option value="1.0">Medium (100%)</option>
-                <option value="1.15">Large (115%)</option>
+                <option value="1.0">Small (85%)</option>
+                <option value="1.15">Medium (100% - Default)</option>
+                <option value="1.3">Large (115%)</option>
               </select>
             </div>
           </div>
@@ -70,15 +70,16 @@
           <div class="settings-column">
             <h2>Configuration</h2>
             
-            <div class="form-group row-align">
+            <div class="form-group">
               <div class="label-info">
-                <label for="layoutToggle">Tab Preview</label>
-                <span class="sub-text">Show a widescreen page preview panel.</span>
+                <label for="layoutMode">Layout Mode</label>
+                <span class="sub-text">Choose the presentation layout of the switcher overlay.</span>
               </div>
-              <label class="switch">
-                <input type="checkbox" id="layoutToggle">
-                <span class="slider"></span>
-              </label>
+              <select id="layoutMode">
+                <option value="list">List Layout (Default)</option>
+                <option value="preview">Preview Layout</option>
+                <option value="grid">Grid Layout</option>
+              </select>
             </div>
 
             <div class="form-group row-align">

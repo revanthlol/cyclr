@@ -92,6 +92,8 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
     // Capture the newly active tab's screenshot after a brief delay so page stabilizes
     setTimeout(async () => {
         try {
+            const tab = await chrome.tabs.get(activeInfo.tabId);
+            if (tab && !isInjectable(tab.url)) return;
             const dataUrl = await chrome.tabs.captureVisibleTab(activeInfo.windowId, { format: "jpeg", quality: 40 });
             tabScreenshots[activeInfo.tabId] = dataUrl;
         } catch (e) {
@@ -109,6 +111,7 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 // Capture page screenshot when a tab finishes loading
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     if (changeInfo.status === "complete" && tab.active) {
+        if (!isInjectable(tab.url)) return;
         try {
             const dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, { format: "jpeg", quality: 40 });
             tabScreenshots[tabId] = dataUrl;
@@ -169,7 +172,7 @@ async function getSettings() {
             orderMode: "tab-order",
             theme: "dark",
             layoutMode: "list",
-            uiScale: "1.0",
+            uiScale: "1.15",
             enableAnimations: true,
             enableBlur: false
         }, (items) => {
@@ -213,7 +216,7 @@ async function broadcastRender() {
             theme: settings.theme, 
             layoutMode: settings.layoutMode, 
             zoomFactor: zoomFactor, 
-            uiScale: parseFloat(settings.uiScale || "1.0"), 
+            uiScale: parseFloat(settings.uiScale || "1.15"), 
             enableAnimations: !!settings.enableAnimations, 
             enableBlur: !!settings.enableBlur 
         });
@@ -233,11 +236,13 @@ async function triggerOpen() {
         if (!activeTab) return;
 
         // Try to capture a fresh screenshot of the active tab immediately before showing the overlay
-        try {
-            const dataUrl = await chrome.tabs.captureVisibleTab(activeTab.windowId, { format: "jpeg", quality: 40 });
-            tabScreenshots[activeTab.id] = dataUrl;
-        } catch (e) {
-            // Silently ignore restricted context captures
+        if (isInjectable(activeTab.url)) {
+            try {
+                const dataUrl = await chrome.tabs.captureVisibleTab(activeTab.windowId, { format: "jpeg", quality: 40 });
+                tabScreenshots[activeTab.id] = dataUrl;
+            } catch (e) {
+                // Silently ignore restricted context captures
+            }
         }
 
         // 1. Trial and Error Injection
@@ -399,5 +404,27 @@ chrome.runtime.onMessage.addListener(async (msg) => {
         const direction = msg.direction || 1;
         state.selectedIndex = (state.selectedIndex + direction + state.tabs.length) % state.tabs.length;
         await broadcastRender();
+    } else if (msg.type === "cyclr-close-tab") {
+        if (!state.active) return;
+        const tabId = msg.tabId;
+        try {
+            await chrome.tabs.remove(tabId);
+            state.tabs = state.tabs.filter(t => t.id !== tabId);
+            if (state.selectedIndex >= state.tabs.length) {
+                state.selectedIndex = Math.max(0, state.tabs.length - 1);
+            }
+            if (state.tabs.length === 0) {
+                state.active = false;
+                if (state.sourceTabId) {
+                    try {
+                        await chrome.tabs.sendMessage(state.sourceTabId, { type: "cyclr-close" });
+                    } catch (e) {}
+                }
+            } else {
+                await broadcastRender();
+            }
+        } catch (e) {
+            error("[CYCLR] Failed to close tab:", e);
+        }
     }
 });
