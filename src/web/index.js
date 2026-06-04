@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ── Mockup Tab Switcher Demo ──────────────────────────────────────────────
     const tabRows = document.querySelectorAll(".mockup-tab-row");
     const previewImg = document.querySelector(".mockup-preview-screenshot");
+    const mockupOverlay = document.querySelector(".mockup-overlay-container");
     let currentIndex = 0;
     let cycleInterval = null;
     let resumeTimeout = null;
@@ -12,7 +13,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function activateTab(index, instant = false) {
-        index = ((index % tabRows.length) + tabRows.length) % tabRows.length;
+        const isGrid = mockupOverlay && mockupOverlay.classList.contains("grid-mode");
+        const limit = isGrid ? 4 : tabRows.length;
+        index = ((index % limit) + limit) % limit;
         currentIndex = index;
 
         // Update highlight
@@ -126,22 +129,37 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Widescreen & List Mode Mockup Toggle
+    // Widescreen, List & Grid Mode Mockup Toggle
     const toggleWidescreen = document.getElementById("toggleWidescreen");
     const toggleList = document.getElementById("toggleList");
-    const mockupOverlay = document.querySelector(".mockup-overlay-container");
+    const toggleGrid = document.getElementById("toggleGrid");
 
-    if (toggleWidescreen && toggleList && mockupOverlay) {
+    if (toggleWidescreen && toggleList && toggleGrid && mockupOverlay) {
         toggleWidescreen.addEventListener("click", () => {
             toggleWidescreen.classList.add("active");
             toggleList.classList.remove("active");
+            toggleGrid.classList.remove("active");
             mockupOverlay.classList.remove("list-mode");
+            mockupOverlay.classList.remove("grid-mode");
         });
 
         toggleList.addEventListener("click", () => {
             toggleList.classList.add("active");
             toggleWidescreen.classList.remove("active");
+            toggleGrid.classList.remove("active");
             mockupOverlay.classList.add("list-mode");
+            mockupOverlay.classList.remove("grid-mode");
+        });
+
+        toggleGrid.addEventListener("click", () => {
+            toggleGrid.classList.add("active");
+            toggleWidescreen.classList.remove("active");
+            toggleList.classList.remove("active");
+            mockupOverlay.classList.add("grid-mode");
+            mockupOverlay.classList.remove("list-mode");
+            if (currentIndex >= 4) {
+                activateTab(0, true);
+            }
         });
     }
 });

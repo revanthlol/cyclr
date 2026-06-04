@@ -42,6 +42,8 @@ jobs:
           cd dist/firefox
 
           jq '
+            del(.background.service_worker)
+            |
             .background = {
               "scripts": ["src/background/background.js"]
             }

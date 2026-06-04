@@ -25,6 +25,7 @@ A lightweight, keyboard-driven tab switcher for Chromium and Firefox browsers, i
 - **Cycle Down**: Tap <kbd>Q</kbd>, <kbd>ArrowDown</kbd>, or <kbd>Tab</kbd>.
 - **Cycle Up**: Tap <kbd>ArrowUp</kbd> or <kbd>Shift + Tab</kbd>.
 - **Commit**: Release <kbd>Alt</kbd> (or the active modifier key), or press <kbd>Enter</kbd>.
+- **Close Tab**: Press <kbd>Alt + W</kbd> (or the active modifier + <kbd>W</kbd>).
 - **Cancel**: Press <kbd>Escape</kbd>.
 
 ## Installation

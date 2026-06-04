@@ -361,6 +361,117 @@ a.brand:hover .brand-name {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+.mockup-grid-thumb {
+    display: none;
+}
+
+/* Grid Mode Mockup Styles */
+.mockup-overlay-container.grid-mode {
+    max-width: 580px; /* Sized perfectly for 4 columns of cards */
+    padding: 16px 20px;
+    border-radius: 20px;
+    background: rgba(30, 30, 30, 0.65);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.mockup-overlay-container.grid-mode .mockup-preview-panel {
+    display: none;
+}
+
+.mockup-overlay-container.grid-mode .mockup-list-panel {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    width: 100%;
+}
+
+/* Hide tabs 5 through 8 in Grid mode so it stays strictly at 4 tabs */
+.mockup-overlay-container.grid-mode .mockup-tab-row:nth-child(n+5) {
+    display: none;
+}
+
+.mockup-overlay-container.grid-mode .mockup-tab-row {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    padding: 0;
+    background: transparent;
+    gap: 0;
+    cursor: pointer;
+    align-items: stretch;
+    width: 100%;
+    min-width: 0; /* Enable column shrinking/ellipsis truncation */
+    color: #cccccc;
+    transition: transform 120ms ease;
+}
+
+.mockup-overlay-container.grid-mode .mockup-tab-row:hover {
+    transform: translateY(-2px);
+}
+
+.mockup-overlay-container.grid-mode .mockup-tab-row.active-tab {
+    background: transparent;
+    color: inherit;
+}
+
+.mockup-overlay-container.grid-mode .mockup-grid-thumb {
+    display: flex;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    border-radius: 12px;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid transparent;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.mockup-overlay-container.grid-mode .mockup-tab-row.active-tab .mockup-grid-thumb {
+    border-color: #5c7cfa;
+    box-shadow: 0 0 0 2px rgba(92, 124, 250, 0.25), 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.mockup-overlay-container.grid-mode .mockup-grid-screenshot {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mockup-overlay-container.grid-mode .mockup-tab-content {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    padding: 0 4px;
+    width: 100%;
+    min-width: 0; /* Enable title container shrinking */
+    box-sizing: border-box;
+}
+
+.mockup-overlay-container.grid-mode .mockup-favicon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.mockup-overlay-container.grid-mode .mockup-tab-title {
+    font-size: 11px;
+    font-weight: 500;
+    color: #aaaaaa;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 150ms ease;
+}
+
+.mockup-overlay-container.grid-mode .mockup-tab-row.active-tab .mockup-tab-title,
+.mockup-overlay-container.grid-mode .mockup-tab-row:hover .mockup-tab-title {
+    color: #ffffff;
+}
 
 /* Details Section */
 .details-section {
@@ -811,4 +922,58 @@ kbd {
     margin-left: 6px;
     vertical-align: middle;
 }
+
+/* Mobile Responsiveness Media Queries */
+@media (max-width: 768px) {
+    .mockup-section {
+        justify-content: flex-start;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+}
+
+@media (max-width: 600px) {
+    .title {
+        font-size: 28px;
+        letter-spacing: -0.5px;
+    }
+    
+    .subtitle {
+        font-size: 15px;
+    }
+    
+    .intro-actions {
+        flex-direction: column;
+        width: 100%;
+        gap: 12px;
+    }
+    
+    .intro-actions a {
+        width: 100%;
+        text-align: center;
+        box-sizing: border-box;
+    }
+    
+    .secondary-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px 16px;
+    }
+    
+    .secondary-links .divider {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .landing-container {
+        padding: 30px 16px;
+        gap: 40px;
+    }
+    
+    .main-content {
+        gap: 40px;
+    }
+}
+
 

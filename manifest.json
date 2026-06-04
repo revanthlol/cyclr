@@ -1,17 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Cyclr",
-  "version": "1.1.4",
+  "version": "1.2.0",
   "description": "A lightweight, keyboard-driven tab switcher for Chromium browsers, inspired by OS-level Alt-Tab menus.",
-
-  "browser_specific_settings": {
-    "gecko": {
-      "id": "cyclr@revanthlol.com",
-      "data_collection_permissions": {
-        "required": ["none"]
-      }
-    }
-  },
 
   "permissions": [
     "tabs",
@@ -32,37 +23,24 @@
   },
 
   "action": {
-    "default_popup": "src/settings/settings.html",
-    "default_icon": {
-      "16": "assets/icons/cyclr-16x16.png",
-      "32": "assets/icons/cyclr-32x32.png",
-      "48": "assets/icons/cyclr-48x48.png",
-      "128": "assets/icons/cyclr-128x128.png"
-    }
+    "default_popup": "src/settings/settings.html"
   },
 
   "background": {
-    "service_worker": "src/background/background.js",
-    "scripts": ["src/background/background.js"]
+    "service_worker": "src/background/background.js"
   },
 
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": [
-        "src/content/overlay.js"
-      ],
-      "css": [
-        "src/content/overlay.css"
-      ]
+      "js": ["src/content/overlay.js"],
+      "css": ["src/content/overlay.css"]
     }
   ],
 
   "web_accessible_resources": [
     {
-      "resources": [
-        "assets/images/*.svg"
-      ],
+      "resources": ["assets/images/*.svg"],
       "matches": ["<all_urls>"]
     }
   ],
