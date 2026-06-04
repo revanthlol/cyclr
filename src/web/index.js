@@ -162,5 +162,29 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+    // Close button interactions in mockup
+    const closeBtns = document.querySelectorAll(".mockup-close-tab-btn, .mockup-grid-close-btn");
+    closeBtns.forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            const row = btn.closest(".mockup-tab-row");
+            if (row) {
+                row.style.transition = "all 0.3s ease";
+                row.style.opacity = "0";
+                row.style.transform = "scale(0.9)";
+                setTimeout(() => {
+                    row.style.display = "none";
+                }, 300);
+            }
+        });
+        btn.addEventListener("mouseenter", (e) => {
+            e.stopPropagation();
+        });
+        btn.addEventListener("mouseleave", (e) => {
+            e.stopPropagation();
+        });
+    });
 });
 

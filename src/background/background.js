@@ -33,12 +33,61 @@ const state = {
 const MAX_VISIBLE_TABS = 100;
 let tabHistory = []; // Array of tab IDs in MRU order (most recent first)
 const tabScreenshots = {}; // Cache of tab screenshots: tabId -> dataURL
+const tabFavicons = {}; // Cache of preloaded favicons: tabId -> { originalUrl, dataUrl }
+
+// Helper to fetch a favicon URL and convert it to a data URL (Base64) in service worker context
+async function fetchFaviconAsDataUrl(url) {
+    if (!url) return null;
+    if (url.startsWith("data:")) return url;
+    if (!url.startsWith("http://") && !url.startsWith("https://")) return null;
+    try {
+        const response = await fetch(url);
+        if (!response.ok) return null;
+        const buffer = await response.arrayBuffer();
+        const bytes = new Uint8Array(buffer);
+        let binary = '';
+        for (let i = 0; i < bytes.byteLength; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        const base64 = btoa(binary);
+        const contentType = response.headers.get("content-type") || "image/x-icon";
+        return `data:${contentType};base64,${base64}`;
+    } catch (e) {
+        return null;
+    }
+}
+
+// Preload/cache favicon images when tabs are discovered
+async function preloadFavicon(tab) {
+    if (!tab || !tab.id || !tab.favIconUrl) return;
+    // Only preload if we don't have a screenshot cached yet (initial uncached state)
+    if (tabScreenshots[tab.id]) return;
+
+    // Avoid redundant fetches if we already cached this specific URL for this tab
+    if (tabFavicons[tab.id] && tabFavicons[tab.id].originalUrl === tab.favIconUrl) {
+        return;
+    }
+
+    const dataUrl = await fetchFaviconAsDataUrl(tab.favIconUrl);
+    if (dataUrl) {
+        tabFavicons[tab.id] = {
+            originalUrl: tab.favIconUrl,
+            dataUrl: dataUrl
+        };
+        log(`[CYCLR] Preloaded favicon for tab ${tab.id}: ${tab.title}`);
+    }
+}
 
 // Initialize MRU history on start or installation
 async function initializeTabHistory() {
     try {
         const tabs = await chrome.tabs.query({});
         tabHistory = tabs.map(t => t.id);
+
+        // Preload favicons for all discovered tabs
+        for (const tab of tabs) {
+            preloadFavicon(tab);
+        }
 
         const activeTabs = await chrome.tabs.query({ active: true, currentWindow: true });
         const activeTab = activeTabs[0];
@@ -106,10 +155,15 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 chrome.tabs.onRemoved.addListener((tabId) => {
     removeFromTabHistory(tabId);
     delete tabScreenshots[tabId]; // Evict screenshot from memory cache
+    delete tabFavicons[tabId]; // Evict preloaded favicon
 });
 
 // Capture page screenshot when a tab finishes loading
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+    if (changeInfo.favIconUrl || changeInfo.status === "complete") {
+        preloadFavicon(tab);
+    }
+
     if (changeInfo.status === "complete" && tab.active) {
         if (!isInjectable(tab.url)) return;
         try {
@@ -119,6 +173,11 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
             // Silently ignore restricted urls
         }
     }
+});
+
+// Preload favicon when a new tab is created
+chrome.tabs.onCreated.addListener((tab) => {
+    preloadFavicon(tab);
 });
 
 // Pre-check function to verify if a tab's URL is a core browser page
@@ -171,7 +230,7 @@ async function getSettings() {
         chrome.storage.local.get({
             orderMode: "tab-order",
             theme: "dark",
-            layoutMode: "list",
+            layoutMode: "preview",
             uiScale: "1.15",
             enableAnimations: true,
             enableBlur: false
@@ -209,6 +268,7 @@ async function broadcastRender() {
                 title: t.title,
                 url: t.url, 
                 favIconUrl: t.favIconUrl,
+                favIconDataUrl: (tabFavicons[t.id] && tabFavicons[t.id].dataUrl) || null,
                 active: t.active, 
                 screenshot: tabScreenshots[t.id] || null 
             })),
@@ -292,6 +352,11 @@ async function triggerOpen() {
 
         // 3. Injectable Flow: Script is active, proceed to render overlay
         let tabs = await chrome.tabs.query({ currentWindow: true });
+
+        // Preload any missing favicons for current window tabs
+        for (const tab of tabs) {
+            preloadFavicon(tab);
+        }
 
         if (settings.orderMode === "mru") {
             // Sort tabs by their position in the MRU history

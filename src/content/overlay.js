@@ -61,6 +61,15 @@ if (window === window.top) {
         return placeholder;
     }
 
+    // Helper to create preview favicon placeholder
+    function createPreviewPlaceholder(title) {
+        const placeholder = document.createElement("div");
+        placeholder.className = "preview-favicon-placeholder";
+        const letter = title ? title.trim().charAt(0) : "?";
+        placeholder.textContent = letter;
+        return placeholder;
+    }
+
     // Helper to get private page SVGs
     function getPrivatePageSvg(url) {
         if (!url) return null;
@@ -700,27 +709,33 @@ if (window === window.top) {
                     svgImg.src = chrome.runtime.getURL(`assets/images/${privateSvg}`);
                     previewPanel.appendChild(svgImg);
                 } else {
-                    const favUrl = (!IS_FIREFOX && selectedTab.url)
-                        ? `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(selectedTab.url)}&size=64`
-                        : (selectedTab.favIconUrl || "");
-                    if (favUrl) {
+                    const urlsToTry = [];
+                    if (!IS_FIREFOX) {
+                        if (selectedTab.favIconDataUrl) urlsToTry.push(selectedTab.favIconDataUrl);
+                        if (selectedTab.favIconUrl) urlsToTry.push(selectedTab.favIconUrl);
+                        if (selectedTab.url) urlsToTry.push(`chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(selectedTab.url)}&size=64`);
+                    } else {
+                        if (selectedTab.favIconUrl) urlsToTry.push(selectedTab.favIconUrl);
+                    }
+
+                    if (urlsToTry.length > 0) {
+                        let attemptIndex = 0;
                         const bigImg = document.createElement("img");
                         bigImg.className = "preview-favicon";
-                        bigImg.src = favUrl;
+                        bigImg.src = urlsToTry[attemptIndex];
                         bigImg.onerror = () => {
-                            if (bigImg.parentNode === previewPanel) {
-                                const bigPlaceholder = document.createElement("div");
-                                bigPlaceholder.className = "preview-favicon-placeholder";
-                                bigPlaceholder.textContent = selectedTab.title ? selectedTab.title.trim().charAt(0) : "?";
-                                previewPanel.replaceChild(bigPlaceholder, bigImg);
+                            attemptIndex++;
+                            if (attemptIndex < urlsToTry.length) {
+                                bigImg.src = urlsToTry[attemptIndex];
+                            } else {
+                                if (bigImg.parentNode === previewPanel) {
+                                    previewPanel.replaceChild(createPreviewPlaceholder(selectedTab.title), bigImg);
+                                }
                             }
                         };
                         previewPanel.appendChild(bigImg);
                     } else {
-                        const bigPlaceholder = document.createElement("div");
-                        bigPlaceholder.className = "preview-favicon-placeholder";
-                        bigPlaceholder.textContent = selectedTab.title ? selectedTab.title.trim().charAt(0) : "?";
-                        previewPanel.appendChild(bigPlaceholder);
+                        previewPanel.appendChild(createPreviewPlaceholder(selectedTab.title));
                     }
                 }
             }
@@ -838,27 +853,33 @@ if (window === window.top) {
                     svgImg.src = chrome.runtime.getURL(`assets/images/${privateSvg}`);
                     previewPanel.appendChild(svgImg);
                 } else {
-                    const favUrl = (!IS_FIREFOX && selectedTab.url)
-                        ? `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(selectedTab.url)}&size=64`
-                        : (selectedTab.favIconUrl || "");
-                    if (favUrl) {
+                    const urlsToTry = [];
+                    if (!IS_FIREFOX) {
+                        if (selectedTab.favIconDataUrl) urlsToTry.push(selectedTab.favIconDataUrl);
+                        if (selectedTab.favIconUrl) urlsToTry.push(selectedTab.favIconUrl);
+                        if (selectedTab.url) urlsToTry.push(`chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(selectedTab.url)}&size=64`);
+                    } else {
+                        if (selectedTab.favIconUrl) urlsToTry.push(selectedTab.favIconUrl);
+                    }
+
+                    if (urlsToTry.length > 0) {
+                        let attemptIndex = 0;
                         const bigImg = document.createElement("img");
                         bigImg.className = "preview-favicon";
-                        bigImg.src = favUrl;
+                        bigImg.src = urlsToTry[attemptIndex];
                         bigImg.onerror = () => {
-                            if (bigImg.parentNode === previewPanel) {
-                                const bigPlaceholder = document.createElement("div");
-                                bigPlaceholder.className = "preview-favicon-placeholder";
-                                bigPlaceholder.textContent = selectedTab.title ? selectedTab.title.trim().charAt(0) : "?";
-                                previewPanel.replaceChild(bigPlaceholder, bigImg);
+                            attemptIndex++;
+                            if (attemptIndex < urlsToTry.length) {
+                                bigImg.src = urlsToTry[attemptIndex];
+                            } else {
+                                if (bigImg.parentNode === previewPanel) {
+                                    previewPanel.replaceChild(createPreviewPlaceholder(selectedTab.title), bigImg);
+                                }
                             }
                         };
                         previewPanel.appendChild(bigImg);
                     } else {
-                        const bigPlaceholder = document.createElement("div");
-                        bigPlaceholder.className = "preview-favicon-placeholder";
-                        bigPlaceholder.textContent = selectedTab.title ? selectedTab.title.trim().charAt(0) : "?";
-                        previewPanel.appendChild(bigPlaceholder);
+                        previewPanel.appendChild(createPreviewPlaceholder(selectedTab.title));
                     }
                 }
             }
@@ -947,16 +968,27 @@ if (window === window.top) {
                 img.src = chrome.runtime.getURL(`assets/images/${privateSvg}`);
                 thumbWrap.appendChild(img);
             } else {
-                const faviconUrl = (!IS_FIREFOX && tab.url)
-                    ? `chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(tab.url)}&size=64`
-                    : (tab.favIconUrl || "");
+                const urlsToTry = [];
+                if (!IS_FIREFOX) {
+                    if (tab.favIconDataUrl) urlsToTry.push(tab.favIconDataUrl);
+                    if (tab.favIconUrl) urlsToTry.push(tab.favIconUrl);
+                    if (tab.url) urlsToTry.push(`chrome-extension://${chrome.runtime.id}/_favicon/?pageUrl=${encodeURIComponent(tab.url)}&size=64`);
+                } else {
+                    if (tab.favIconUrl) urlsToTry.push(tab.favIconUrl);
+                }
 
-                if (faviconUrl) {
+                if (urlsToTry.length > 0) {
+                    let attemptIndex = 0;
                     const img = document.createElement("img");
                     img.className = "grid-favicon";
-                    img.src = faviconUrl;
+                    img.src = urlsToTry[attemptIndex];
                     img.onerror = () => {
-                        thumbWrap.replaceChildren(createPlaceholder(tab.title));
+                        attemptIndex++;
+                        if (attemptIndex < urlsToTry.length) {
+                            img.src = urlsToTry[attemptIndex];
+                        } else {
+                            thumbWrap.replaceChildren(createPlaceholder(tab.title));
+                        }
                     };
                     thumbWrap.appendChild(img);
                 } else {

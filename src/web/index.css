@@ -13,7 +13,7 @@ body {
 
 .landing-container {
     width: 100%;
-    max-width: 920px;
+    max-width: 1060px;
 
     padding: 40px 24px;
     box-sizing: border-box;
@@ -160,7 +160,7 @@ a.brand:hover .brand-name {
 
 .mockup-browser {
     width: 100%;
-    max-width: 860px;
+    max-width: 100%;
     min-width: 680px; /* Prevent layout squishing on mobile */
     background-color: #121214;
     border: 1px solid #252526;
@@ -251,8 +251,8 @@ a.brand:hover .brand-name {
 
 /* CSS simulated overlay tab switcher */
 .mockup-overlay-container {
-    width: 100%;
-    max-width: 780px;
+    width: 975px;
+    height: 314px;
     align-self: center;
     background: #252526;
     border: 1px solid #3c3c3c;
@@ -260,15 +260,16 @@ a.brand:hover .brand-name {
     padding: 6px;
     box-sizing: border-box;
     display: flex;
-    gap: 10px;
-    align-items: center;
-    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.5);
-    margin: 20px 0;
-    transition: max-width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    gap: 12px;
+    align-items: stretch;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+    margin: 20px auto;
+    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .mockup-overlay-container.list-mode {
-    max-width: 360px;
+    width: 480px;
+    height: 314px;
 }
 
 .mockup-overlay-container.list-mode .mockup-preview-panel {
@@ -276,8 +277,8 @@ a.brand:hover .brand-name {
 }
 
 .mockup-preview-panel {
-    width: 420px;
-    height: 270px;
+    width: 483px;
+    height: 100%;
     border-radius: 6px;
     background: #101011;
     border: 1px solid #3c3c3c;
@@ -313,25 +314,30 @@ a.brand:hover .brand-name {
     flex-direction: column;
     gap: 2px;
     flex-grow: 1;
+    height: 100%;
+    overflow-y: auto;
 }
 
 .mockup-tab-row {
-    height: 32px;
+    height: 36px;
     display: flex;
     align-items: center;
-    padding: 0 8px;
+    padding: 0 10px;
     border-radius: 4px;
-    gap: 8px;
+    gap: 10px;
     box-sizing: border-box;
     color: #cccccc;
-    font-size: 12px;
+    font-size: 13px;
+    cursor: default;
+    user-select: none;
+    position: relative;
+    transition: background-color 50ms ease;
 }
 
 .mockup-tab-row.active-tab {
     background: #5c7cfa;
     color: #ffffff;
 }
-
 
 .mockup-tab-row.selected {
     background: #5c7cfa;
@@ -340,6 +346,15 @@ a.brand:hover .brand-name {
 
 .mockup-tab-row.selected .mockup-tab-title {
     font-weight: 500;
+}
+
+.mockup-tab-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-grow: 1;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .mockup-favicon {
@@ -361,19 +376,61 @@ a.brand:hover .brand-name {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
 .mockup-grid-thumb {
     display: none;
 }
 
+/* Close Button Styles in Mockup */
+.mockup-close-tab-btn {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: none;
+    background: #ff5f56;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+    margin-left: auto;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: background-color 150ms, transform 150ms;
+}
+
+.mockup-close-tab-btn:hover {
+    background-color: #ff3b30;
+    transform: scale(1.1);
+}
+
+.mockup-close-tab-btn svg {
+    width: 8px;
+    height: 8px;
+}
+
+.mockup-tab-row.active-tab .mockup-close-tab-btn,
+.mockup-tab-row:hover .mockup-close-tab-btn {
+    display: flex;
+}
+
+/* Hide list close button in Grid Mode */
+.mockup-overlay-container.grid-mode .mockup-close-tab-btn {
+    display: none !important;
+}
+
 /* Grid Mode Mockup Styles */
 .mockup-overlay-container.grid-mode {
-    max-width: 580px; /* Sized perfectly for 4 columns of cards */
+    width: 598px;
+    height: 142px;
     padding: 16px 20px;
     border-radius: 20px;
     background: rgba(30, 30, 30, 0.65);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.08);
+    overflow: visible;
 }
 
 .mockup-overlay-container.grid-mode .mockup-preview-panel {
@@ -382,9 +439,11 @@ a.brand:hover .brand-name {
 
 .mockup-overlay-container.grid-mode .mockup-list-panel {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, 130px);
     gap: 12px;
     width: 100%;
+    height: auto;
+    overflow: visible;
 }
 
 /* Hide tabs 5 through 8 in Grid mode so it stays strictly at 4 tabs */
@@ -401,10 +460,11 @@ a.brand:hover .brand-name {
     gap: 0;
     cursor: pointer;
     align-items: stretch;
-    width: 100%;
-    min-width: 0; /* Enable column shrinking/ellipsis truncation */
+    width: 130px;
+    min-width: 0;
     color: #cccccc;
     transition: transform 120ms ease;
+    position: relative;
 }
 
 .mockup-overlay-container.grid-mode .mockup-tab-row:hover {
@@ -448,7 +508,7 @@ a.brand:hover .brand-name {
     margin-top: 8px;
     padding: 0 4px;
     width: 100%;
-    min-width: 0; /* Enable title container shrinking */
+    min-width: 0;
     box-sizing: border-box;
 }
 
@@ -471,6 +531,46 @@ a.brand:hover .brand-name {
 .mockup-overlay-container.grid-mode .mockup-tab-row.active-tab .mockup-tab-title,
 .mockup-overlay-container.grid-mode .mockup-tab-row:hover .mockup-tab-title {
     color: #ffffff;
+}
+
+/* Grid Close Button Styles in Mockup */
+.mockup-grid-close-btn-wrapper {
+    display: none;
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    z-index: 10;
+}
+
+.mockup-grid-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: none;
+    background: #ff5f56;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+    transition: background-color 150ms, transform 150ms;
+}
+
+.mockup-grid-close-btn:hover {
+    background-color: #ff3b30;
+    transform: scale(1.1);
+}
+
+.mockup-grid-close-btn svg {
+    width: 8px;
+    height: 8px;
+}
+
+.mockup-overlay-container.grid-mode .mockup-tab-row.active-tab .mockup-grid-close-btn-wrapper,
+.mockup-overlay-container.grid-mode .mockup-tab-row:hover .mockup-grid-close-btn-wrapper {
+    display: flex;
 }
 
 /* Details Section */
@@ -924,7 +1024,7 @@ kbd {
 }
 
 /* Mobile Responsiveness Media Queries */
-@media (max-width: 768px) {
+@media (max-width: 1060px) {
     .mockup-section {
         justify-content: flex-start;
         padding-left: 16px;

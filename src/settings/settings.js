@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
     chrome.storage.local.get({
         orderMode: "tab-order",
         theme: "dark",
-        layoutMode: "list",
+        layoutMode: "preview",
         devMode: false,
         uiScale: "1.15",
         enableAnimations: true,
