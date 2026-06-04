@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
         resumeTimeout = setTimeout(startCycle, 3000);
     }
 
-    // Hover interaction — instant
+    // Hover and Click interaction
     tabRows.forEach((row, index) => {
         row.addEventListener("mouseenter", () => {
             pauseCycle();
@@ -71,7 +71,49 @@ document.addEventListener("DOMContentLoaded", () => {
         row.addEventListener("mouseleave", () => {
             scheduleResume();
         });
+        row.addEventListener("click", (e) => {
+            if (e.target.closest(".mockup-close-tab-btn") || e.target.closest(".mockup-grid-close-btn-wrapper")) {
+                return;
+            }
+            pauseCycle();
+            clearTimeout(resumeTimeout);
+            activateTab(index, true);
+            scheduleResume();
+        });
     });
+
+    // Touch Swipe to cycle tabs in the mockup on mobile
+    let touchStartX = 0;
+    let touchStartY = 0;
+    const listPanel = document.querySelector(".mockup-list-panel");
+    if (listPanel) {
+        listPanel.addEventListener("touchstart", (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+            pauseCycle();
+            clearTimeout(resumeTimeout);
+        }, { passive: true });
+
+        listPanel.addEventListener("touchend", (e) => {
+            const touchEndX = e.changedTouches[0].screenX;
+            const touchEndY = e.changedTouches[0].screenY;
+            
+            const diffX = touchEndX - touchStartX;
+            const diffY = touchEndY - touchStartY;
+            
+            // Only trigger if horizontal swipe is prominent and larger than vertical swipe
+            if (Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY)) {
+                if (diffX < 0) {
+                    // Swipe left -> Next tab
+                    activateTab(currentIndex + 1, true);
+                } else {
+                    // Swipe right -> Prev tab
+                    activateTab(currentIndex - 1, true);
+                }
+            }
+            scheduleResume();
+        }, { passive: true });
+    }
 
     // Kick off auto-cycle
     activateTab(0, true);

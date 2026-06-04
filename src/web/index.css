@@ -1076,4 +1076,66 @@ kbd {
     }
 }
 
+/* ─── Mobile Mockup Fix ───────────────────────────────────────────────── */
+@media (max-width: 720px) {
+    .mockup-section {
+        overflow-x: hidden;
+        padding: 10px 0;
+    }
+
+    .mockup-browser {
+        min-width: 0;      /* drop the 680px floor */
+        width: 100%;
+    }
+
+    /* Collapse to list-only — preview is a hover feature, useless on touch */
+    .mockup-overlay-container,
+    .mockup-overlay-container.list-mode {
+        width: 100% !important;
+        height: auto !important;
+        margin: 0;
+    }
+
+    .mockup-preview-panel {
+        display: none !important;
+    }
+
+    .mockup-list-panel {
+        height: auto;
+        max-height: 280px;
+    }
+
+    /* Grid mode: 2-col instead of 4 so cards aren't tiny slivers */
+    .mockup-overlay-container.grid-mode {
+        width: 100% !important;
+        height: auto !important;
+        padding: 12px;
+    }
+
+    .mockup-overlay-container.grid-mode .mockup-list-panel {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .mockup-overlay-container.grid-mode .mockup-tab-row {
+        width: 100%;
+    }
+
+    /* Tighten toggle buttons so the header row doesn't overflow */
+    .toggle-btn {
+        padding: 4px 8px;
+        font-size: 10px;
+    }
+}
+
+/* ─── Minor text tightening below 600px ──────────────────────────────── */
+@media (max-width: 600px) {
+    .clean-list li {
+        font-size: 14px;
+    }
+
+    .details-grid {
+        gap: 28px;
+    }
+}
+
 
