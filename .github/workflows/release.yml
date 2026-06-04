@@ -55,6 +55,8 @@ jobs:
             }
             |
             .permissions |= map(select(. != "favicon"))
+            |
+            .web_accessible_resources |= map(.resources |= map(select(. != "_favicon/*")))
           ' manifest.json > manifest-firefox.json
 
           mv manifest-firefox.json manifest.json

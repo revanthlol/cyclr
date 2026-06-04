@@ -708,10 +708,12 @@ if (window === window.top) {
                         bigImg.className = "preview-favicon";
                         bigImg.src = favUrl;
                         bigImg.onerror = () => {
-                            const bigPlaceholder = document.createElement("div");
-                            bigPlaceholder.className = "preview-favicon-placeholder";
-                            bigPlaceholder.textContent = selectedTab.title ? selectedTab.title.trim().charAt(0) : "?";
-                            previewPanel.replaceChild(bigPlaceholder, bigImg);
+                            if (bigImg.parentNode === previewPanel) {
+                                const bigPlaceholder = document.createElement("div");
+                                bigPlaceholder.className = "preview-favicon-placeholder";
+                                bigPlaceholder.textContent = selectedTab.title ? selectedTab.title.trim().charAt(0) : "?";
+                                previewPanel.replaceChild(bigPlaceholder, bigImg);
+                            }
                         };
                         previewPanel.appendChild(bigImg);
                     } else {
@@ -844,10 +846,12 @@ if (window === window.top) {
                         bigImg.className = "preview-favicon";
                         bigImg.src = favUrl;
                         bigImg.onerror = () => {
-                            const bigPlaceholder = document.createElement("div");
-                            bigPlaceholder.className = "preview-favicon-placeholder";
-                            bigPlaceholder.textContent = selectedTab.title ? selectedTab.title.trim().charAt(0) : "?";
-                            previewPanel.replaceChild(bigPlaceholder, bigImg);
+                            if (bigImg.parentNode === previewPanel) {
+                                const bigPlaceholder = document.createElement("div");
+                                bigPlaceholder.className = "preview-favicon-placeholder";
+                                bigPlaceholder.textContent = selectedTab.title ? selectedTab.title.trim().charAt(0) : "?";
+                                previewPanel.replaceChild(bigPlaceholder, bigImg);
+                            }
                         };
                         previewPanel.appendChild(bigImg);
                     } else {
@@ -1072,7 +1076,9 @@ if (window === window.top) {
                 img.className = "favicon";
                 img.src = faviconUrl;
                 img.onerror = () => {
-                    row.replaceChild(createPlaceholder(tab.title), img);
+                    if (img.parentNode === row) {
+                        row.replaceChild(createPlaceholder(tab.title), img);
+                    }
                 };
                 row.appendChild(img);
             } else {
