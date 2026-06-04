@@ -40,7 +40,7 @@
 
   "web_accessible_resources": [
     {
-      "resources": ["assets/images/*.svg"],
+      "resources": ["assets/images/*.svg", "_favicon/*"],
       "matches": ["<all_urls>"]
     }
   ],
