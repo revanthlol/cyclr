@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function activateTab(index, instant = false) {
         const isGrid = mockupOverlay && mockupOverlay.classList.contains("grid-mode");
-        const limit = isGrid ? 4 : tabRows.length;
+        const limit = isGrid ? (window.innerWidth <= 720 ? 2 : 4) : tabRows.length;
         index = ((index % limit) + limit) % limit;
         currentIndex = index;
 
@@ -199,7 +199,8 @@ document.addEventListener("DOMContentLoaded", () => {
             toggleList.classList.remove("active");
             mockupOverlay.classList.add("grid-mode");
             mockupOverlay.classList.remove("list-mode");
-            if (currentIndex >= 4) {
+            const maxGridTabs = window.innerWidth <= 720 ? 2 : 4;
+            if (currentIndex >= maxGridTabs) {
                 activateTab(0, true);
             }
         });
