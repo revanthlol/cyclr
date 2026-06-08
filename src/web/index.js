@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     const downloadChromeBtn = document.getElementById("downloadChromeBtn");
-    const downloadFirefoxBtn = document.getElementById("downloadFirefoxBtn");
+    const manualFirefoxBtn = document.getElementById("manualFirefoxBtn");
     const versionBadge = document.getElementById("versionBadge");
 
     // Pre-fetch latest release from GitHub API to resolve asset URLs dynamically
@@ -145,8 +145,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (chromeAsset && downloadChromeBtn) {
                     downloadChromeBtn.href = chromeAsset.browser_download_url;
                 }
-                if (firefoxAsset && downloadFirefoxBtn) {
-                    downloadFirefoxBtn.href = firefoxAsset.browser_download_url;
+                if (firefoxAsset && manualFirefoxBtn) {
+                    manualFirefoxBtn.href = firefoxAsset.browser_download_url;
                 }
             }
         })
@@ -164,10 +164,10 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    if (downloadFirefoxBtn) {
-        downloadFirefoxBtn.addEventListener("click", (e) => {
+    if (manualFirefoxBtn) {
+        manualFirefoxBtn.addEventListener("click", (e) => {
             e.preventDefault();
-            window.location.href = `install.html?download=${encodeURIComponent(downloadFirefoxBtn.href)}`;
+            window.location.href = `install.html?download=${encodeURIComponent(manualFirefoxBtn.href)}`;
         });
     }
 

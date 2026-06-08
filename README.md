@@ -8,7 +8,7 @@ A lightweight, keyboard-driven tab switcher for Chromium and Firefox browsers, i
 
 <div align="center">
 
-**[Visit the website](https://cyclrr.vercel.app/)** • **[Download the latest release](https://github.com/revanthlol/cyclr/releases/latest/download/cyclr.zip)**
+**[Visit the website](https://cyclrr.vercel.app/)** • **[Install for Firefox](https://addons.mozilla.org/en-US/firefox/addon/cyclr/)** • **[Download for Chromium](https://github.com/revanthlol/cyclr/releases/latest/download/cyclr-chrome.zip)**
 
 </div>
 
@@ -32,17 +32,19 @@ A lightweight, keyboard-driven tab switcher for Chromium and Firefox browsers, i
 
 ## Installation
 
-Install Cyclr manually:
+### Firefox (Recommended)
+Install Cyclr directly from the official **[Firefox Add-ons Store](https://addons.mozilla.org/en-US/firefox/addon/cyclr/)**.
 
-### Chrome / Chromium-based Browsers
-1. Download the latest [`cyclr.zip`](https://github.com/revanthlol/cyclr/releases/latest/download/cyclr.zip) from the [releases page](https://github.com/revanthlol/cyclr/releases), or clone this [repository](https://github.com/revanthlol/cyclr).
+### Chrome / Chromium-based Browsers (Manual Install)
+1. Download the latest [`cyclr-chrome.zip`](https://github.com/revanthlol/cyclr/releases/latest/download/cyclr-chrome.zip) from the [releases page](https://github.com/revanthlol/cyclr/releases), or clone this [repository](https://github.com/revanthlol/cyclr).
 2. Open Chrome/Chromium and go to `chrome://extensions`.
 3. Enable **Developer mode** (top-right toggle).
 4. Click **Load unpacked** and select the unzipped folder (or the repo root).
 5. Done — configure preferences via the extension's options page.
 
-### Firefox
-1. Download and extract the latest [`cyclr.zip`](https://github.com/revanthlol/cyclr/releases/latest/download/cyclr.zip).
+### Firefox (Manual / Temporary Install)
+If you want to run the development version or load it manually:
+1. Download and extract the latest [`cyclr-firefox.zip`](https://github.com/revanthlol/cyclr/releases/latest/download/cyclr-firefox.zip) from the [releases page](https://github.com/revanthlol/cyclr/releases).
 2. Open Firefox and navigate to `about:debugging`.
 3. Click **This Firefox** in the left sidebar.
 4. Click the **Load Temporary Add-on...** button.

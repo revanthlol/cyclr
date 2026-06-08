@@ -116,7 +116,7 @@ a.brand:hover .brand-name {
 .main-content {
     display: flex;
     flex-direction: column;
-    gap: 60px;
+    gap: 32px;
 }
 
 /* Intro Section */
@@ -576,7 +576,7 @@ a.brand:hover .brand-name {
 /* Details Section */
 .details-section {
     border-top: 1px solid #222225;
-    padding-top: 40px;
+    padding-top: 24px;
 }
 
 .details-grid {
@@ -685,7 +685,10 @@ kbd {
 }
 
 .btn-primary {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     background-color: #f1f5f9;
     color: #0b0b0d;
     border: none;
@@ -808,7 +811,10 @@ kbd {
 }
 
 .btn-secondary {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     text-decoration: none;
     text-align: center;
     background: transparent;
